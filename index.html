@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Organiza tus películas, series y documentales vistos">
+  <title>Mi Lista de Contenidos | Organiza lo que ves</title>
+  
+  <!-- Preload recursos críticos -->
+  <link rel="preload" href="./style.css" as="style">
+  <link rel="preload" href="./script.js" as="script">
+  
+  <!-- Metatags PWA -->
+  <link rel="manifest" href="./manifest.json" crossorigin="use-credentials">
+  <meta name="theme-color" content="#3498db" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#2c3e50" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- Favicons -->
+  <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- Botón instalación PWA -->
+  <button id="boton-instalar" aria-label="Instalar aplicación" hidden>
+    📲 Instalar App
+  </button>
+
+  <header class="app-header" role="banner">
+    <h1>Mi lista de Películas, Series y Documentales</h1>
+  </header>
+
+  <main class="app-main" role="main">
+    <section aria-labelledby="form-title">
+      <h2 id="form-title" class="visually-hidden">Formulario de contenido</h2>
+      <form id="formulario" class="card">
+        <div class="form-group">
+          <label for="tipo">Tipo:</label>
+          <select id="tipo" name="tipo" aria-required="true">
+            <option value="Película">Película</option>
+            <option value="Serie">Serie</option>
+            <option value="Documental">Documental</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="titulo">Título:</label>
+          <input type="text" id="titulo" name="titulo" required aria-required="true" placeholder="Ej: El Padre">
+        </div>
+
+        <div class="form-group">
+          <label for="plataforma">Plataforma:</label>
+          <input type="text" id="plataforma" name="plataforma" placeholder="Netflix, HBO, etc.">
+        </div>
+
+        <div id="datos-serie" class="form-series" hidden>
+          <div class="form-group">
+            <label for="temporada">Temporada:</label>
+            <input type="number" id="temporada" name="temporada" min="1" value="1">
+          </div>
+
+          <div class="form-group">
+            <label for="episodio">Episodio:</label>
+            <input type="number" id="episodio" name="episodio" min="1" value="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="estado">Estado:</label>
+          <select id="estado" name="estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En progreso">En progreso</option>
+            <option value="Visto">Visto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="nota">Nota personal:</label>
+          <textarea id="nota" name="nota" rows="3" placeholder="¿Te gustó? ¿La recomiendas?"></textarea>
+        </div>
+
+        <button type="submit" id="boton-enviar" class="btn-primary">Añadir</button>
+      </form>
+    </section>
+
+    <section aria-labelledby="contenido-title">
+      <h2 id="contenido-title">Contenido guardado</h2>
+      
+      <div id="filtros" class="card">
+        <div class="filter-grid">
+          <div class="form-group">
+            <label for="buscador">Buscar por título:</label>
+            <input type="text" id="buscador" placeholder="Escribe para buscar..." aria-label="Buscar contenido">
+          </div>
+          
+          <div class="form-group">
+            <label for="filtro-tipo">Filtrar por tipo:</label>
+            <select id="filtro-tipo">
+              <option value="">Todos</option>
+              <option value="Película">Película</option>
+              <option value="Serie">Serie</option>
+              <option value="Documental">Documental</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="filtro-plataforma">Filtrar por plataforma:</label>
+            <input type="text" id="filtro-plataforma" placeholder="Ej: Netflix" aria-label="Filtrar por plataforma">
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button id="boton-exportar" type="button" class="btn-secondary">
+            Exportar lista (.json)
+          </button>
+          
+          <div class="file-input-group">
+            <label for="importar-json" class="btn-tertiary">
+              Importar lista
+            </label>
+            <input type="file" id="importar-json" accept=".json" aria-label="Importar archivo JSON" hidden>
+          </div>
+        </div>
+      </div>
+
+      <div id="estadisticas" class="stats-container card" aria-live="polite"></div>
+      
+      <ul id="lista-contenido" class="content-list" aria-label="Lista de contenidos"></ul>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    // Polyfill para elementos modernos
+    if (!HTMLDetailsElement) {
+      document.write('<script src="https://cdn.polyfill.io/v3/polyfill.min.js"><\/script>');
+    }
+  </script>
+  <script src="./script.js" defer></script>
+  
+  <!-- Inicialización PWA -->
+  <script>
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('Error SW:', err));
+      });
+    }
+
+    // Instalación PWA
+    let deferredPrompt;
+    const installButton = document.getElementById('boton-instalar');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installButton.hidden = false;
+      
+      installButton.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          installButton.hidden = true;
+          console.log('Usuario aceptó la instalación');
+        }
+        deferredPrompt = null;
+      });
+    });
+
+    // Verificación PWA
+    function verificarPWA() {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      if (isStandalone) {
+        document.documentElement.setAttribute('data-pwa-installed', 'true');
+      }
+      return {
+        'Service Worker': !!navigator.serviceWorker?.controller,
+        'Manifest': !!document.querySelector('link[rel="manifest"]'),
+        'Standalone': isStandalone,
+        'HTTPS': location.protocol === 'https:'
+      };
+    }
+    
+    // Iniciar
+    document.addEventListener('DOMContentLoaded', () => {
+      verificarPWA();
+      
+      // Mostrar datos de serie solo cuando sea necesario
+      document.getElementById('tipo').addEventListener('change', function() {
+        document.getElementById('datos-serie').hidden = this.value !== 'Serie';
+      });
+    });
+  </script>
+</body>
+</html>
