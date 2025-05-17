@@ -7,7 +7,7 @@
   <meta name="description" content="Seenly te ayuda a organizar las películas, series y documentales que has visto o quieres ver.">
 
   <!-- PWA -->
-  <link rel="manifest" href="./manifest.json" crossorigin="use-credentials">
+  <link rel="manifest" href="/mi-lista-contenidos/manifest.json" crossorigin="use-credentials">
   <meta name="theme-color" content="#3498db">
   <meta name="background-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
@@ -15,19 +15,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Icons -->
-  <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
-  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" href="/mi-lista-contenidos/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="/mi-lista-contenidos/icon-192.png">
 
   <!-- Preloads y estilos -->
-  <link rel="preload" href="./style.css" as="style">
-  <link rel="preload" href="./script.js" as="script">
+  <link rel="preload" href="/mi-lista-contenidos/style.css" as="style">
+  <link rel="preload" href="/mi-lista-contenidos/script.js" as="script">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="/mi-lista-contenidos/style.css">
 </head>
 <body>
 
   <div id="splash-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background-color:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;">
-    <img src="./icons/splash.png" alt="Splash Seenly" style="max-width:60%;height:auto;">
+    <img src="/mi-lista-contenidos/icons/splash.png" alt="Splash Seenly" style="max-width:60%;height:auto;">
   </div>
 
   <button id="boton-instalar" hidden>📲 Instalar App</button>
@@ -98,7 +98,7 @@
   </main>
 
   <!-- Scripts -->
-  <script src="./script.js" defer></script>
+  <script src="/mi-lista-contenidos/script.js" defer></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Splash
@@ -136,7 +136,7 @@
     // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('/mi-lista-contenidos/sw.js')
           .then(reg => console.log('SW registrado:', reg.scope))
           .catch(err => console.error('SW error:', err));
       });
@@ -144,4 +144,5 @@
   </script>
 </body>
 </html>
+
 
