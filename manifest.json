@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "Mi Lista de Contenidos",
-  "short_name": "MisContenidos",
+  "name": "Seenly",
+  "short_name": "Seenly",
   "description": "Organiza tus películas, series y documentales vistos",
   "start_url": "./?source=pwa",
   "scope": "./",

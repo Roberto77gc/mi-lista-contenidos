@@ -107,10 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if ('caches' in window) {
       try {
         const cache = await caches.open('mis-contenidos-data');
-        await cache.put(
-          './contenido',
-          new Response(JSON.stringify(contenido))
-        );
+        await cache.put('./contenido', new Response(JSON.stringify(contenido)));
       } catch (e) {
         console.log('⚠️ Error al guardar en caché:', e);
       }
@@ -309,6 +306,15 @@ document.addEventListener('DOMContentLoaded', () => {
       'Standalone': window.matchMedia('(display-mode: standalone)').matches
     };
     console.table(requisitos);
+  }
+
+  // Splash personalizado
+  const splash = document.getElementById('splash-screen');
+  if (splash) {
+    setTimeout(() => {
+      splash.style.opacity = '0';
+      setTimeout(() => splash.remove(), 400);
+    }, 800);
   }
 
   init();
