@@ -8,20 +8,21 @@
   "scope": "/mi-lista-contenidos/",
   "display": "standalone",
   "display_override": ["standalone", "browser"],
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
+  "categories": ["entertainment", "productivity", "movies"],
   "lang": "es-ES",
   "dir": "ltr",
   "icons": [
-    { "src": "/mi-lista-contenidos/icon-48.png", "sizes": "48x48", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/mi-lista-contenidos/icon-72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/mi-lista-contenidos/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/mi-lista-contenidos/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/mi-lista-contenidos/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/mi-lista-contenidos/icon-256.png", "sizes": "256x256", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/mi-lista-contenidos/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/mi-lista-contenidos/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "./icon-48.png", "sizes": "48x48", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-256.png", "sizes": "256x256", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "screenshots": [
     {
@@ -29,16 +30,16 @@
       "sizes": "1280x720",
       "type": "image/png",
       "label": "Pantalla principal de la aplicación",
-      "form_factor": "wide",
-      "platform": "wide"
+      "platform": "wide",
+      "form_factor": "wide"
     },
     {
       "src": "/mi-lista-contenidos/screenshot-2.png",
       "sizes": "750x1334",
       "type": "image/png",
       "label": "Vista móvil",
-      "form_factor": "narrow",
-      "platform": "narrow"
+      "platform": "narrow",
+      "form_factor": "narrow"
     }
   ],
   "shortcuts": [
@@ -47,26 +48,23 @@
       "short_name": "Nuevo",
       "description": "Añadir nuevo contenido",
       "url": "/mi-lista-contenidos/?new=true",
-      "icons": [{ "src": "/mi-lista-contenidos/icon-add.png", "sizes": "96x96", "type": "image/png" }]
+      "icons": [{ "src": "./icon-add.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Mis favoritos",
       "short_name": "Favoritos",
       "description": "Ver contenido favorito",
       "url": "/mi-lista-contenidos/?filter=favorites",
-      "icons": [{ "src": "/mi-lista-contenidos/icon-fav.png", "sizes": "96x96", "type": "image/png" }]
+      "icons": [{ "src": "./icon-fav.png", "sizes": "96x96", "type": "image/png" }]
     }
   ],
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
   "file_handlers": [
     {
       "action": "/mi-lista-contenidos/import",
       "accept": {
         "application/json": [".json"]
       },
-      "icons": [{ "src": "/mi-lista-contenidos/icon-import.png", "sizes": "96x96", "type": "image/png" }],
+      "icons": [{ "src": "./icon-import.png", "sizes": "96x96", "type": "image/png" }],
       "launch_type": "single-client"
     }
   ],
@@ -86,22 +84,22 @@
       ]
     }
   },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "protocol_handlers": [
     {
       "protocol": "web+seenly",
       "url": "/mi-lista-contenidos/?url=%s"
     }
   ],
-  "edge_side_panel": {
-    "preferred_width": 400
+  "launch_handler": {
+    "client_mode": "navigate-existing"
   },
-  "scope_extensions": [
-    {
-      "origin": "https://roberto77gc.github.io"
-    }
+  "permissions": [
+    "clipboard-write",
+    "fileSystem"
   ],
-  "iarc_rating_id": "Seenly-General",
-  "categories": ["entertainment", "productivity", "books"],
   "capture_links": "new-client",
   "handle_links": "preferred",
   "prefer_related_applications": false,
@@ -111,7 +109,9 @@
       "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
       "id": "com.seenly.app"
     }
-  ]
+  ],
+  "iarc_rating_id": "e1a2b3c4d5"
 }
+
 
 
