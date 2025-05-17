@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modo Offline</title>
+  <title>Sin conexión | Seenly</title>
+  <meta name="description" content="Estás sin conexión. Seenly seguirá funcionando con los datos guardados en tu dispositivo.">
+  <meta name="theme-color" content="#3498db" />
+
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,6 +14,11 @@
       padding: 2rem;
       background-color: #f8f9fa;
       color: #2c3e50;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
     h1 {
@@ -22,6 +30,7 @@
     p {
       margin-bottom: 2rem;
       color: #555;
+      max-width: 400px;
     }
 
     button {
@@ -38,11 +47,21 @@
     button:hover {
       background-color: #2980b9;
     }
+
+    img {
+      max-width: 150px;
+      margin-bottom: 2rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
-  <h1>Estás offline</h1>
-  <p>La aplicación funcionará con los datos guardados en caché.</p>
-  <button onclick="location.reload()">🔄 Reintentar</button>
+  <main role="main">
+    <img src="./icon-192.png" alt="Logo de Seenly" />
+    <h1>Estás offline</h1>
+    <p>La app seguirá funcionando con los datos que ya tienes guardados. Cuando recuperes conexión, se sincronizará automáticamente.</p>
+    <button onclick="location.reload()">🔄 Reintentar</button>
+  </main>
 </body>
 </html>
+

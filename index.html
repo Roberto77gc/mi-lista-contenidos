@@ -3,216 +3,145 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Seenly - Tú historial visual</title>
+  <title>Seenly - Tu historial visual</title>
   <meta name="description" content="Seenly te ayuda a organizar las películas, series y documentales que has visto o quieres ver.">
 
-  <!-- Preload recursos críticos -->
-  <link rel="preload" href="./style.css" as="style">
-  <link rel="preload" href="./script.js" as="script">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  
-  <!-- Metatags PWA -->
+  <!-- PWA -->
   <link rel="manifest" href="./manifest.json" crossorigin="use-credentials">
-  <meta name="theme-color" content="#3498db" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#2c3e50" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#3498db">
+  <meta name="background-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <!-- Favicons -->
+
+  <!-- Icons -->
   <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="./style.css" />
+
+  <!-- Preloads y estilos -->
+  <link rel="preload" href="./style.css" as="style">
+  <link rel="preload" href="./script.js" as="script">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <!-- Botón instalación PWA -->
-  <button id="boton-instalar" aria-label="Instalar aplicación" hidden>
-    📲 Instalar App
-  </button>
 
-  <header class="app-header" role="banner">
+  <div id="splash-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background-color:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <img src="./icons/splash.png" alt="Splash Seenly" style="max-width:60%;height:auto;">
+  </div>
+
+  <button id="boton-instalar" hidden>📲 Instalar App</button>
+
+  <header>
     <h1>Mi lista de Películas, Series y Documentales</h1>
   </header>
 
-  <main class="app-main" role="main">
+  <main>
+    <!-- Formulario -->
     <section aria-labelledby="form-title">
       <h2 id="form-title" class="visually-hidden">Formulario de contenido</h2>
-      <form id="formulario" class="card">
-        <div class="form-group">
-          <label for="tipo">Tipo:</label>
-          <select id="tipo" name="tipo" aria-required="true">
-            <option value="Película">Película</option>
-            <option value="Serie">Serie</option>
-            <option value="Documental">Documental</option>
-          </select>
+      <form id="formulario">
+        <label for="tipo">Tipo:</label>
+        <select id="tipo">
+          <option value="Película">Película</option>
+          <option value="Serie">Serie</option>
+          <option value="Documental">Documental</option>
+        </select>
+
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" placeholder="Ej: El Padrino" required>
+
+        <label for="plataforma">Plataforma:</label>
+        <input type="text" id="plataforma" placeholder="Netflix, HBO...">
+
+        <div id="datos-serie" hidden>
+          <label for="temporada">Temporada:</label>
+          <input type="number" id="temporada" min="1" value="1">
+
+          <label for="episodio">Episodio:</label>
+          <input type="number" id="episodio" min="1" value="1">
         </div>
 
-        <div class="form-group">
-          <label for="titulo">Título:</label>
-          <input type="text" id="titulo" name="titulo" required aria-required="true" placeholder="Ej: El Padre">
-        </div>
+        <label for="estado">Estado:</label>
+        <select id="estado">
+          <option value="Pendiente">Pendiente</option>
+          <option value="En progreso">En progreso</option>
+          <option value="Visto">Visto</option>
+        </select>
 
-        <div class="form-group">
-          <label for="plataforma">Plataforma:</label>
-          <input type="text" id="plataforma" name="plataforma" placeholder="Netflix, HBO, etc.">
-        </div>
+        <label for="nota">Nota personal:</label>
+        <textarea id="nota" placeholder="¿Te gustó? ¿La recomiendas?"></textarea>
 
-        <div id="datos-serie" class="form-series" hidden>
-          <div class="form-group">
-            <label for="temporada">Temporada:</label>
-            <input type="number" id="temporada" name="temporada" min="1" value="1">
-          </div>
-
-          <div class="form-group">
-            <label for="episodio">Episodio:</label>
-            <input type="number" id="episodio" name="episodio" min="1" value="1">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="estado">Estado:</label>
-          <select id="estado" name="estado">
-            <option value="Pendiente">Pendiente</option>
-            <option value="En progreso">En progreso</option>
-            <option value="Visto">Visto</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="nota">Nota personal:</label>
-          <textarea id="nota" name="nota" rows="3" placeholder="¿Te gustó? ¿La recomiendas?"></textarea>
-        </div>
-
-        <button type="submit" id="boton-enviar" class="btn-primary">Añadir</button>
+        <button type="submit" id="boton-enviar">Añadir</button>
       </form>
     </section>
 
-    <section aria-labelledby="contenido-title">
-      <h2 id="contenido-title">Contenido guardado</h2>
-      
-      <div id="filtros" class="card">
-        <div class="filter-grid">
-          <div class="form-group">
-            <label for="buscador">Buscar por título:</label>
-            <input type="text" id="buscador" placeholder="Escribe para buscar..." aria-label="Buscar contenido">
-          </div>
-          
-          <div class="form-group">
-            <label for="filtro-tipo">Filtrar por tipo:</label>
-            <select id="filtro-tipo">
-              <option value="">Todos</option>
-              <option value="Película">Película</option>
-              <option value="Serie">Serie</option>
-              <option value="Documental">Documental</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="filtro-plataforma">Filtrar por plataforma:</label>
-            <input type="text" id="filtro-plataforma" placeholder="Ej: Netflix" aria-label="Filtrar por plataforma">
-          </div>
-        </div>
-
-        <div class="action-buttons">
-          <button id="boton-exportar" type="button" class="btn-secondary">
-            Exportar lista (.json)
-          </button>
-          
-          <div class="file-input-group">
-            <label for="importar-json" class="btn-tertiary">
-              Importar lista
-            </label>
-            <input type="file" id="importar-json" accept=".json" aria-label="Importar archivo JSON" hidden>
-          </div>
-        </div>
+    <!-- Filtros -->
+    <section>
+      <h2>Contenido guardado</h2>
+      <div id="filtros">
+        <input id="buscador" placeholder="Buscar...">
+        <select id="filtro-tipo">
+          <option value="">Todos</option>
+          <option value="Película">Películas</option>
+          <option value="Serie">Series</option>
+          <option value="Documental">Documentales</option>
+        </select>
+        <input id="filtro-plataforma" placeholder="Filtrar por plataforma">
+        <button id="boton-exportar" type="button">Exportar (.json)</button>
+        <label for="importar-json" class="btn">Importar</label>
+        <input type="file" id="importar-json" accept=".json" hidden>
       </div>
-
-      <div id="estadisticas" class="stats-container card" aria-live="polite"></div>
-      
-      <ul id="lista-contenido" class="content-list" aria-label="Lista de contenidos"></ul>
+      <div id="estadisticas" aria-live="polite"></div>
+      <ul id="lista-contenido" aria-label="Lista de contenidos guardados"></ul>
     </section>
   </main>
 
   <!-- Scripts -->
-  <script>
-    // Polyfill para elementos modernos
-    if (!HTMLDetailsElement) {
-      document.write('<script src="https://cdn.polyfill.io/v3/polyfill.min.js"><\/script>');
-    }
-  </script>
   <script src="./script.js" defer></script>
-  
-  <!-- Inicialización PWA -->
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Splash
+      setTimeout(() => {
+        document.getElementById('splash-screen')?.remove();
+      }, 1000);
+
+      // Mostrar campos si es serie
+      document.getElementById('tipo').addEventListener('change', function () {
+        document.getElementById('datos-serie').hidden = this.value !== 'Serie';
+      });
+
+      // Instalar PWA
+      let deferredPrompt;
+      const btn = document.getElementById('boton-instalar');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        btn.hidden = false;
+      });
+
+      btn.addEventListener('click', async () => {
+        deferredPrompt.prompt();
+        const res = await deferredPrompt.userChoice;
+        if (res.outcome === 'accepted') btn.hidden = true;
+        deferredPrompt = null;
+      });
+
+      // Verificar instalación
+      const standalone = window.matchMedia('(display-mode: standalone)').matches;
+      if (standalone) document.documentElement.setAttribute('data-pwa', 'true');
+    });
+
     // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('SW registrado:', reg.scope))
-          .catch(err => console.error('Error SW:', err));
+          .catch(err => console.error('SW error:', err));
       });
     }
-
-    // Instalación PWA
-    let deferredPrompt;
-    const installButton = document.getElementById('boton-instalar');
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installButton.hidden = false;
-      
-      installButton.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        
-        if (outcome === 'accepted') {
-          installButton.hidden = true;
-          console.log('Usuario aceptó la instalación');
-        }
-        deferredPrompt = null;
-      });
-    });
-
-    // Verificación PWA
-    function verificarPWA() {
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-      if (isStandalone) {
-        document.documentElement.setAttribute('data-pwa-installed', 'true');
-      }
-      return {
-        'Service Worker': !!navigator.serviceWorker?.controller,
-        'Manifest': !!document.querySelector('link[rel="manifest"]'),
-        'Standalone': isStandalone,
-        'HTTPS': location.protocol === 'https:'
-      };
-    }
-    
-    // Iniciar
-    document.addEventListener('DOMContentLoaded', () => {
-      verificarPWA();
-      
-      // Mostrar datos de serie solo cuando sea necesario
-      document.getElementById('tipo').addEventListener('change', function() {
-        document.getElementById('datos-serie').hidden = this.value !== 'Serie';
-      });
-    });
   </script>
-  <!-- Splash Screen personalizado -->
-<div id="splash-screen">
-  <img src="./icons/splash.png" alt="Splash Seenly">
-</div>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('✔ SW registrado:', reg.scope))
-      .catch(err => console.error('SW error:', err));
-  }
-</script>
-
 </body>
 </html>
+

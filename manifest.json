@@ -1,14 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "id": "/mi-lista-contenidos",
   "name": "Seenly – Tu historial visual",
   "short_name": "Seenly",
   "description": "Organiza tus películas, series y documentales vistos. Tu historial visual, siempre contigo.",
-  "id": "/mi-lista-contenidos",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "browser"],
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
   "categories": ["entertainment", "productivity", "books"],
@@ -30,17 +30,13 @@
       "src": "./screenshot-1.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "label": "Pantalla principal de la aplicación",
-      "platform": "wide",
-      "form_factor": "wide"
+      "label": "Pantalla principal de la aplicación"
     },
     {
       "src": "./screenshot-2.png",
       "sizes": "750x1334",
       "type": "image/png",
-      "label": "Vista móvil",
-      "platform": "narrow",
-      "form_factor": "narrow"
+      "label": "Vista móvil"
     }
   ],
   "shortcuts": [
@@ -97,6 +93,7 @@
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
+  "scope_extensions": [],
   "permissions": [
     "clipboard-write",
     "fileSystem"
@@ -110,6 +107,8 @@
       "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
       "id": "com.seenly.app"
     }
-  ]
+  ],
+  "iarc_rating_id": "e10a1234-5678-9876-abcd-1234567890ef"
 }
+
 

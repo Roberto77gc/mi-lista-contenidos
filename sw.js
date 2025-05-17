@@ -9,65 +9,78 @@ const ASSETS = [
   './manifest.json',
   './fallback.html',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './images/fallback.jpg' // Si existe, mejora UX offline
 ];
 
-// INSTALACIÓN
-self.addEventListener('install', (event) => {
+// ===== INSTALACIÓN =====
+self.addEventListener('install', event => {
   console.log('[SW] Instalando...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('[SW] Cacheando archivos');
-      return cache.addAll(ASSETS);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[SW] Cacheando archivos esenciales');
+        return cache.addAll(ASSETS);
+      })
+      .then(() => self.skipWaiting())
+      .catch(err => console.error('[SW] Error durante instalación:', err))
   );
 });
 
-// ACTIVACIÓN
-self.addEventListener('activate', (event) => {
+// ===== ACTIVACIÓN =====
+self.addEventListener('activate', event => {
   console.log('[SW] Activado');
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
+    caches.keys().then(keys =>
+      Promise.all(
         keys.map(key => {
           if (![CACHE_NAME, DYNAMIC_CACHE].includes(key)) {
             console.log('[SW] Eliminando caché antigua:', key);
             return caches.delete(key);
           }
         })
-      );
-    }).then(() => self.clients.claim())
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// FETCH (Cache First + Network Fallback)
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+// ===== FETCH =====
+self.addEventListener('fetch', event => {
+  const { request } = event;
+
+  // Solo GET
+  if (request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
+    caches.match(request)
+      .then(cached => {
+        if (cached) return cached;
 
-      return fetch(event.request).then(response => {
-        if (!response || response.status !== 200) return response;
-        return caches.open(DYNAMIC_CACHE).then(cache => {
-          cache.put(event.request, response.clone());
-          return response;
-        });
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('./fallback.html');
-        }
-        return new Response('', { status: 404 });
-      });
-    })
+        return fetch(request)
+          .then(response => {
+            if (!response || response.status !== 200 || response.type === 'opaque') return response;
+            return caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(request, response.clone());
+              return response;
+            });
+          })
+          .catch(() => {
+            if (request.destination === 'image') {
+              return caches.match('./images/fallback.jpg');
+            }
+            if (request.mode === 'navigate') {
+              return caches.match('./fallback.html');
+            }
+            return new Response('', { status: 404 });
+          });
+      })
   );
 });
 
-// SINCRONIZACIÓN EN SEGUNDO PLANO
-self.addEventListener('sync', (event) => {
+// ===== SYNC =====
+self.addEventListener('sync', event => {
   if (event.tag === 'sync-data') {
-    console.log('[SW] Sync en segundo plano');
+    console.log('[SW] Sincronización en segundo plano');
     event.waitUntil(syncPendingData());
   }
 });
@@ -77,18 +90,20 @@ async function syncPendingData() {
   const keys = await cache.keys();
   const pending = keys.filter(req => req.url.includes('/api/') && req.method === 'POST');
 
-  return Promise.all(pending.map(async req => {
-    try {
-      const res = await fetch(req);
-      if (res.ok) await cache.delete(req);
-    } catch (err) {
-      console.error('[SW] Error en sync:', err);
-    }
-  }));
+  return Promise.all(
+    pending.map(async req => {
+      try {
+        const res = await fetch(req);
+        if (res.ok) await cache.delete(req);
+      } catch (err) {
+        console.error('[SW] Error en sync:', err);
+      }
+    })
+  );
 }
 
-// NOTIFICACIONES PUSH
-self.addEventListener('push', (event) => {
+// ===== PUSH NOTIFICATIONS =====
+self.addEventListener('push', event => {
   const data = event.data?.json() || {
     title: 'Seenly',
     body: 'Hay nuevas actualizaciones disponibles',
@@ -106,17 +121,16 @@ self.addEventListener('push', (event) => {
   );
 });
 
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientsArr => {
-      for (const client of clientsArr) {
-        if ('focus' in client) {
-          return client.focus();
-        }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if ('focus' in client) return client.focus();
       }
       return clients.openWindow(event.notification.data.url);
     })
   );
 });
+
 
