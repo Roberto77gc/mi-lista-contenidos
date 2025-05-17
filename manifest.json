@@ -1,8 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "Seenly",
+  "name": "Seenly – Tu historial visual",
   "short_name": "Seenly",
-  "description": "Organiza tus películas, series y documentales vistos",
+  "description": "Organiza tus películas, series y documentales vistos. Tu historial visual, siempre contigo.",
+  "id": "/mi-lista-contenidos",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
@@ -48,14 +49,14 @@
       "short_name": "Nuevo",
       "description": "Añadir nuevo contenido",
       "url": "./?new=true",
-      "icons": [{ "src": "./icon-add.png", "sizes": "96x96" }]
+      "icons": [{ "src": "./icon-add.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Mis favoritos",
       "short_name": "Favoritos",
       "description": "Ver contenido favorito",
       "url": "./?filter=favorites",
-      "icons": [{ "src": "./icon-fav.png", "sizes": "96x96" }]
+      "icons": [{ "src": "./icon-fav.png", "sizes": "96x96", "type": "image/png" }]
     }
   ],
   "file_handlers": [
@@ -64,7 +65,7 @@
       "accept": {
         "application/json": [".json"]
       },
-      "icons": [{ "src": "./icon-import.png", "sizes": "96x96" }],
+      "icons": [{ "src": "./icon-import.png", "sizes": "96x96", "type": "image/png" }],
       "launch_type": "single-client"
     }
   ],
@@ -89,7 +90,7 @@
   },
   "protocol_handlers": [
     {
-      "protocol": "web+miscontenidos",
+      "protocol": "web+seenly",
       "url": "./?url=%s"
     }
   ],
@@ -106,8 +107,9 @@
   "related_applications": [
     {
       "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.example.app",
-      "id": "com.example.app"
+      "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
+      "id": "com.seenly.app"
     }
   ]
 }
+

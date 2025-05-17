@@ -206,6 +206,13 @@
 <div id="splash-screen">
   <img src="./icons/splash.png" alt="Splash Seenly">
 </div>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('✔ SW registrado:', reg.scope))
+      .catch(err => console.error('SW error:', err));
+  }
+</script>
 
 </body>
 </html>
