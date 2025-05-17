@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
   "name": "Seenly – Tu historial visual",
   "short_name": "Seenly",
   "description": "Organiza tus películas, series y documentales vistos. Tu historial visual, siempre contigo.",
@@ -14,14 +13,12 @@
   "dir": "ltr",
   "categories": ["entertainment", "productivity", "movies"],
   "icons": [
-    { "src": "icons/icon-48.png", "sizes": "48x48", "type": "image/png" },
-    { "src": "icons/icon-72.png", "sizes": "72x72", "type": "image/png" },
-    { "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" },
-    { "src": "icons/icon-128.png", "sizes": "128x128", "type": "image/png" },
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-256.png", "sizes": "256x256", "type": "image/png" },
-    { "src": "icons/icon-384.png", "sizes": "384x384", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
   "screenshots": [
     {
@@ -35,34 +32,8 @@
       "type": "image/png"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "Añadir nuevo",
-      "short_name": "Nuevo",
-      "description": "Añadir nuevo contenido",
-      "url": "/mi-lista-contenidos/?new=true",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
-    },
-    {
-      "name": "Mis favoritos",
-      "short_name": "Favoritos",
-      "description": "Ver contenido favorito",
-      "url": "/mi-lista-contenidos/?filter=favorites",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
-    }
-  ],
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "capture_links": "new-client",
-  "handle_links": "preferred",
-  "prefer_related_applications": false,
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
-      "id": "com.seenly.app"
-    }
-  ]
+  "prefer_related_applications": false
 }
-
