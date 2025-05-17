@@ -1,111 +1,73 @@
-// ===== CONFIGURACIÓN =====
-const CACHE_NAME = 'mis-contenidos-v3';
-const DYNAMIC_CACHE = 'dynamic-content-v2';
+const CACHE_NAME = 'seenly-cache-v1';
+const DYNAMIC_CACHE = 'seenly-dynamic-v1';
+
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './script.js',
-  './icon-192.png',
-  './icon-512.png',
   './manifest.json',
-  './fallback.html'
+  './fallback.html',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
-// ===== INSTALACIÓN =====
+// INSTALACIÓN
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
+  console.log('[SW] Instalando...');
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Cacheando recursos estáticos');
-        return cache.addAll(ASSETS);
-      })
-      .then(() => {
-        console.log('[SW] Instalación completada');
-        return self.skipWaiting();
-      })
-      .catch(err => {
-        console.error('[SW] Error durante instalación:', err);
-      })
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[SW] Cacheando archivos');
+      return cache.addAll(ASSETS);
+    }).then(() => self.skipWaiting())
   );
 });
 
-// ===== ACTIVACIÓN =====
+// ACTIVACIÓN
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activado');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then(keys => {
       return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME && cache !== DYNAMIC_CACHE) {
-            console.log('[SW] Limpiando cache antiguo:', cache);
-            return caches.delete(cache);
+        keys.map(key => {
+          if (![CACHE_NAME, DYNAMIC_CACHE].includes(key)) {
+            console.log('[SW] Eliminando caché antigua:', key);
+            return caches.delete(key);
           }
         })
       );
-    })
-    .then(() => {
-      console.log('[SW] Claiming clients');
-      return self.clients.claim();
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
-// ===== ESTRATEGIA DE CACHÉ (Cache First + Network Fallback) =====
+// FETCH (Cache First + Network Fallback)
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+  if (event.request.method !== 'GET') return;
 
-  // Excluir APIs externas
-  if (url.origin !== location.origin) return;
-
-  // Estrategia para navegación (HTML)
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then(networkResponse => cacheDynamic(DYNAMIC_CACHE, request, networkResponse.clone()))
-        .catch(() => caches.match('./fallback.html'))
-    );
-    return;
-  }
-
-  // Otros recursos: Cache First
   event.respondWith(
-    caches.match(request)
-      .then(cachedResponse => {
-        return cachedResponse || fetch(request)
-          .then(networkResponse => {
-            if (request.method === 'GET') {
-              return cacheDynamic(DYNAMIC_CACHE, request, networkResponse.clone());
-            }
-            return networkResponse;
-          })
-          .catch(() => {
-            if (request.url.includes('.jpg')) {
-              return caches.match('./images/fallback.jpg');
-            }
-            return new Response('', { status: 404 });
-          });
-      })
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+
+      return fetch(event.request).then(response => {
+        if (!response || response.status !== 200) return response;
+        return caches.open(DYNAMIC_CACHE).then(cache => {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      }).catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('./fallback.html');
+        }
+        return new Response('', { status: 404 });
+      });
+    })
   );
 });
 
-// ===== FUNCIONES AUXILIARES =====
-function cacheDynamic(cacheName, request, response) {
-  if (response.ok) {
-    return caches.open(cacheName).then(cache => {
-      cache.put(request, response.clone());
-      return response;
-    });
-  }
-  return response;
-}
-
-// ===== SINCRONIZACIÓN EN SEGUNDO PLANO =====
+// SINCRONIZACIÓN EN SEGUNDO PLANO
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-data') {
-    console.log('[SW] Sincronización en segundo plano');
+    console.log('[SW] Sync en segundo plano');
     event.waitUntil(syncPendingData());
   }
 });
@@ -113,30 +75,23 @@ self.addEventListener('sync', (event) => {
 async function syncPendingData() {
   const cache = await caches.open(DYNAMIC_CACHE);
   const keys = await cache.keys();
+  const pending = keys.filter(req => req.url.includes('/api/') && req.method === 'POST');
 
-  const pendingRequests = keys.filter(request => {
-    return request.url.includes('/api/') && request.method === 'POST';
-  });
-
-  return Promise.all(
-    pendingRequests.map(async request => {
-      try {
-        const response = await fetch(request);
-        if (response.ok) {
-          await cache.delete(request);
-        }
-      } catch (error) {
-        console.error('[SW] Error en sincronización:', error);
-      }
-    })
-  );
+  return Promise.all(pending.map(async req => {
+    try {
+      const res = await fetch(req);
+      if (res.ok) await cache.delete(req);
+    } catch (err) {
+      console.error('[SW] Error en sync:', err);
+    }
+  }));
 }
 
-// ===== NOTIFICACIONES PUSH =====
+// NOTIFICACIONES PUSH
 self.addEventListener('push', (event) => {
   const data = event.data?.json() || {
-    title: 'Nueva actualización',
-    body: 'Hay nuevos contenidos disponibles',
+    title: 'Seenly',
+    body: 'Hay nuevas actualizaciones disponibles',
     icon: './icon-192.png'
   };
 
@@ -154,11 +109,14 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then(clientList => {
-      if (clientList.length > 0) {
-        return clientList[0].navigate(event.notification.data.url);
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientsArr => {
+      for (const client of clientsArr) {
+        if ('focus' in client) {
+          return client.focus();
+        }
       }
       return clients.openWindow(event.notification.data.url);
     })
   );
 });
+
