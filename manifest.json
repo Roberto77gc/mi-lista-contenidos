@@ -1,39 +1,114 @@
 {
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
   "name": "Seenly – Tu historial visual",
   "short_name": "Seenly",
   "description": "Organiza tus películas, series y documentales vistos. Tu historial visual, siempre contigo.",
+  "id": "/mi-lista-contenidos/",
   "start_url": "/mi-lista-contenidos/?source=pwa",
   "scope": "/mi-lista-contenidos/",
-  "id": "/mi-lista-contenidos/",
   "display": "standalone",
-  "orientation": "portrait",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
+  "categories": ["entertainment", "productivity", "movies"],
   "lang": "es-ES",
   "dir": "ltr",
-  "categories": ["entertainment", "productivity", "movies"],
   "icons": [
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icons/icon-48.png", "sizes": "48x48", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-256.png", "sizes": "256x256", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "screenshots": [
     {
       "src": "images/screenshot-1.png",
       "sizes": "1280x720",
-      "type": "image/png"
+      "type": "image/png",
+      "label": "Pantalla principal de la aplicación",
+      "form_factor": "wide",
+      "platform": "wide"
     },
     {
       "src": "images/screenshot-2.png",
       "sizes": "750x1334",
-      "type": "image/png"
+      "type": "image/png",
+      "label": "Vista móvil de usuario",
+      "form_factor": "narrow",
+      "platform": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Añadir nuevo",
+      "short_name": "Nuevo",
+      "description": "Añadir nuevo contenido",
+      "url": "./?new=true",
+      "icons": [{ "src": "icons/icon-add.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Mis favoritos",
+      "short_name": "Favoritos",
+      "description": "Ver contenido favorito",
+      "url": "./?filter=favorites",
+      "icons": [{ "src": "icons/icon-fav.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./import",
+      "accept": {
+        "application/json": [".json"]
+      },
+      "icons": [{ "src": "icons/icon-import.png", "sizes": "96x96", "type": "image/png" }],
+      "launch_type": "single-client"
+    }
+  ],
+  "share_target": {
+    "action": "./share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*", ".pdf", "text/plain"]
+        }
+      ]
+    }
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+seenly",
+      "url": "./?url=%s"
     }
   ],
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "prefer_related_applications": false
+  "permissions": [
+    "clipboard-write",
+    "fileSystem"
+  ],
+  "capture_links": "new-client",
+  "handle_links": "preferred",
+  "iarc_rating_id": "pending",
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
+      "id": "com.seenly.app"
+    }
+  ]
 }
