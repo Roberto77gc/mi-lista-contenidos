@@ -7,7 +7,7 @@
   "start_url": "/mi-lista-contenidos/?source=pwa",
   "scope": "/mi-lista-contenidos/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "display_override": ["standalone", "browser"],
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
@@ -29,7 +29,7 @@
       "src": "images/screenshot-1.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "label": "Pantalla principal de la aplicación",
+      "label": "Pantalla principal",
       "form_factor": "wide",
       "platform": "wide"
     },
@@ -37,7 +37,7 @@
       "src": "images/screenshot-2.png",
       "sizes": "750x1334",
       "type": "image/png",
-      "label": "Vista móvil de usuario",
+      "label": "Vista móvil",
       "form_factor": "narrow",
       "platform": "narrow"
     }
