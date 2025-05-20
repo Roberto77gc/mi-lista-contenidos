@@ -7,18 +7,13 @@
   "start_url": "/mi-lista-contenidos/?source=pwa",
   "scope": "/mi-lista-contenidos/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "display_override": ["standalone", "browser"],
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
   "categories": ["entertainment", "productivity", "movies"],
   "lang": "es-ES",
   "dir": "ltr",
-  "scope_extensions": [
-    {
-      "origin": "https://roberto77gc.github.io/mi-lista-contenidos/"
-    }
-  ],
   "icons": [
     {
       "src": "icons/icon-192-any.png",
@@ -69,26 +64,14 @@
       "short_name": "Nuevo",
       "description": "Añadir nuevo contenido",
       "url": "./?new=true",
-      "icons": [
-        {
-          "src": "icons/icon-add.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "icons/icon-add.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Mis favoritos",
       "short_name": "Favoritos",
       "description": "Ver contenido favorito",
       "url": "./?filter=favorites",
-      "icons": [
-        {
-          "src": "icons/icon-fav.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "icons/icon-fav.png", "sizes": "96x96", "type": "image/png" }]
     }
   ],
   "file_handlers": [
@@ -97,13 +80,7 @@
       "accept": {
         "application/json": [".json"]
       },
-      "icons": [
-        {
-          "src": "icons/icon-import.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ],
+      "icons": [{ "src": "icons/icon-import.png", "sizes": "96x96", "type": "image/png" }],
       "launch_type": "single-client"
     }
   ],
@@ -129,7 +106,7 @@
   "protocol_handlers": [
     {
       "protocol": "web+seenly",
-      "url": "./?url=%s"
+      "url": "https://roberto77gc.github.io/mi-lista-contenidos/?url=%s"
     }
   ],
   "launch_handler": {
@@ -137,8 +114,13 @@
   },
   "permissions": [
     "clipboard-write",
-    "fileSystem"
+    "fileSystem",
+    "background-sync",
+    "periodic-background-sync"
   ],
+  "background": {
+    "service_worker": "sw.js"
+  },
   "capture_links": "new-client",
   "handle_links": "preferred",
   "iarc_rating_id": "pending",
