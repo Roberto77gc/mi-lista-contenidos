@@ -3,7 +3,7 @@
   "name": "Seenly – Tu historial visual",
   "short_name": "Seenly",
   "description": "Organiza tus películas, series y documentales vistos. Tu historial visual, siempre contigo.",
-  "id": "/mi-lista-contenidos/",
+  "id": "seenly",
   "start_url": "/mi-lista-contenidos/?source=pwa",
   "scope": "/mi-lista-contenidos/",
   "display": "standalone",
