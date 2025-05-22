@@ -64,14 +64,26 @@
       "short_name": "Nuevo",
       "description": "Añadir nuevo contenido",
       "url": "./?new=true",
-      "icons": [{ "src": "icons/icon-add.png", "sizes": "96x96", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "icons/icon-add.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Mis favoritos",
       "short_name": "Favoritos",
       "description": "Ver contenido favorito",
       "url": "./?filter=favorites",
-      "icons": [{ "src": "icons/icon-fav.png", "sizes": "96x96", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "icons/icon-fav.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "file_handlers": [
@@ -80,7 +92,13 @@
       "accept": {
         "application/json": [".json"]
       },
-      "icons": [{ "src": "icons/icon-import.png", "sizes": "96x96", "type": "image/png" }],
+      "icons": [
+        {
+          "src": "icons/icon-import.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ],
       "launch_type": "single-client"
     }
   ],
@@ -126,10 +144,6 @@
       "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
       "id": "com.seenly.app"
     }
-  ],
-  "scope_extensions": [
-    {
-      "origin": "https://roberto77gc.github.io"
-    }
   ]
 }
+
