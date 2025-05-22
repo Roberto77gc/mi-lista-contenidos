@@ -3,11 +3,11 @@
   "name": "Seenly – Tu historial visual",
   "short_name": "Seenly",
   "description": "Organiza tus películas, series y documentales vistos. Tu historial visual, siempre contigo.",
-  "id": "/mi-lista-contenidos",
+  "id": "/mi-lista-contenidos/",
   "start_url": "/mi-lista-contenidos/?source=pwa",
   "scope": "/mi-lista-contenidos/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "display_override": ["standalone", "browser"],
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
@@ -103,10 +103,19 @@
   "edge_side_panel": {
     "preferred_width": 400
   },
+  "protocol_handlers": [
+    {
+      "protocol": "web+seenly",
+      "url": "./?url=%s"
+    }
+  ],
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "permissions": ["clipboard-write", "fileSystem"],
+  "permissions": [
+    "clipboard-write",
+    "fileSystem"
+  ],
   "capture_links": "new-client",
   "handle_links": "preferred",
   "iarc_rating_id": "pending",
