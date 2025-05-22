@@ -7,7 +7,7 @@
   "start_url": "/mi-lista-contenidos/?source=pwa",
   "scope": "/mi-lista-contenidos/",
   "display": "standalone",
-  "display_override": ["standalone", "browser"],
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
@@ -106,7 +106,7 @@
   "protocol_handlers": [
     {
       "protocol": "web+seenly",
-      "url": "https://roberto77gc.github.io/mi-lista-contenidos/?url=%s"
+      "url": "./?url=%s"
     }
   ],
   "launch_handler": {
@@ -114,13 +114,8 @@
   },
   "permissions": [
     "clipboard-write",
-    "fileSystem",
-    "background-sync",
-    "periodic-background-sync"
+    "fileSystem"
   ],
-  "background": {
-    "service_worker": "sw.js"
-  },
   "capture_links": "new-client",
   "handle_links": "preferred",
   "iarc_rating_id": "pending",
@@ -131,6 +126,10 @@
       "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
       "id": "com.seenly.app"
     }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "https://roberto77gc.github.io"
+    }
   ]
 }
-
