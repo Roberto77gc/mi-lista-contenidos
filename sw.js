@@ -1,136 +1,154 @@
-const CACHE_NAME = 'seenly-cache-v1';
-const DYNAMIC_CACHE = 'seenly-dynamic-v1';
+// ===== CONFIGURACIÓN =====
+const CORE_CACHE = 'seenly-core-v2';
+const DYNAMIC_CACHE = 'seenly-dynamic-v2';
+const OFFLINE_PAGE = '/mi-lista-contenidos/fallback.html';
+const FALLBACK_IMAGE = '/mi-lista-contenidos/images/fallback.jpg';
 
-const ASSETS = [
-  './',
-  './index.html',
-  './style.css',
-  './script.js',
-  './manifest.json',
-  './fallback.html',
-  './icon-192.png',
-  './icon-512.png',
-  './images/fallback.jpg' // Si existe, mejora UX offline
+const CORE_ASSETS = [
+  '/mi-lista-contenidos/',
+  '/mi-lista-contenidos/index.html',
+  '/mi-lista-contenidos/style.css',
+  '/mi-lista-contenidos/script.js',
+  '/mi-lista-contenidos/manifest.json',
+  OFFLINE_PAGE,
+  FALLBACK_IMAGE,
+  '/mi-lista-contenidos/icons/icon-192.png',
+  '/mi-lista-contenidos/icons/icon-512.png'
 ];
 
+// ===== ESTRATEGIAS =====
+const networkFirst = async (request) => {
+  try {
+    const networkResponse = await fetch(request);
+    const cache = await caches.open(DYNAMIC_CACHE);
+    cache.put(request, networkResponse.clone());
+    return networkResponse;
+  } catch (err) {
+    const cached = await caches.match(request);
+    return cached || (request.destination === 'document' ? caches.match(OFFLINE_PAGE) : undefined);
+  }
+};
+
+const staleWhileRevalidate = async (request) => {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  try {
+    const [cacheResponse, networkResponse] = await Promise.all([
+      cache.match(request),
+      fetch(request)
+    ]);
+
+    if (networkResponse?.ok) {
+      cache.put(request, networkResponse.clone());
+    }
+
+    return cacheResponse || networkResponse;
+  } catch (err) {
+    return cache.match(request);
+  }
+};
+
 // ===== INSTALACIÓN =====
-self.addEventListener('install', event => {
-  console.log('[SW] Instalando...');
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Cacheando archivos esenciales');
-        return cache.addAll(ASSETS);
-      })
+    caches.open(CORE_CACHE)
+      .then(cache => cache.addAll(CORE_ASSETS))
       .then(() => self.skipWaiting())
-      .catch(err => console.error('[SW] Error durante instalación:', err))
   );
 });
 
 // ===== ACTIVACIÓN =====
-self.addEventListener('activate', event => {
-  console.log('[SW] Activado');
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => {
-          if (![CACHE_NAME, DYNAMIC_CACHE].includes(key)) {
-            console.log('[SW] Eliminando caché antigua:', key);
-            return caches.delete(key);
-          }
-        })
-      )
-    ).then(() => self.clients.claim())
+    caches.keys().then(keys => Promise.all(
+      keys.map(key => ![CORE_CACHE, DYNAMIC_CACHE].includes(key) && caches.delete(key))
+    ))
+    .then(() => self.clients.claim())
   );
 });
 
-// ===== FETCH =====
-self.addEventListener('fetch', event => {
+// ===== MANEJO DE PETICIONES =====
+self.addEventListener('fetch', (event) => {
   const { request } = event;
+  const url = new URL(request.url);
 
-  // Solo GET
-  if (request.method !== 'GET') return;
+  // Excluir solicitudes externas y no GET
+  if (!url.origin.includes(self.location.origin) || request.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(request)
-      .then(cached => {
-        if (cached) return cached;
-
-        return fetch(request)
-          .then(response => {
-            if (!response || response.status !== 200 || response.type === 'opaque') return response;
-            return caches.open(DYNAMIC_CACHE).then(cache => {
-              cache.put(request, response.clone());
-              return response;
-            });
-          })
-          .catch(() => {
-            if (request.destination === 'image') {
-              return caches.match('./images/fallback.jpg');
-            }
-            if (request.mode === 'navigate') {
-              return caches.match('./fallback.html');
-            }
-            return new Response('', { status: 404 });
-          });
-      })
-  );
+  // Estrategias por tipo de recurso
+  if (request.destination === 'document') {
+    event.respondWith(networkFirst(request));
+  } else if (url.pathname.startsWith('/mi-lista-contenidos/api/')) {
+    event.respondWith(networkFirst(request));
+  } else if (['style', 'script', 'image'].includes(request.destination)) {
+    event.respondWith(staleWhileRevalidate(request));
+  } else {
+    event.respondWith(caches.match(request) || fetch(request));
+  }
 });
 
-// ===== SYNC =====
-self.addEventListener('sync', event => {
-  if (event.tag === 'sync-data') {
-    console.log('[SW] Sincronización en segundo plano');
+// ===== SINCRONIZACIÓN EN SEGUNDO PLANO =====
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-contenidos') {
     event.waitUntil(syncPendingData());
   }
 });
 
-async function syncPendingData() {
+const syncPendingData = async () => {
   const cache = await caches.open(DYNAMIC_CACHE);
-  const keys = await cache.keys();
-  const pending = keys.filter(req => req.url.includes('/api/') && req.method === 'POST');
+  const pending = await cache.keys()
+    .then(keys => keys.filter(key => 
+      key.url.includes('/api/') && 
+      ['POST', 'PUT'].includes(key.method)
+    );
 
-  return Promise.all(
-    pending.map(async req => {
-      try {
-        const res = await fetch(req);
-        if (res.ok) await cache.delete(req);
-      } catch (err) {
-        console.error('[SW] Error en sync:', err);
-      }
-    })
-  );
-}
+  for (const req of pending) {
+    try {
+      const body = await req.json();
+      const response = await fetch(req.url, {
+        method: req.method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      if (response.ok) await cache.delete(req);
+    } catch (err) {
+      console.log('[SW] Error en sincronización, reintentando...');
+      return Promise.reject(err);
+    }
+  }
+};
 
-// ===== PUSH NOTIFICATIONS =====
-self.addEventListener('push', event => {
+// ===== NOTIFICACIONES PUSH =====
+self.addEventListener('push', (event) => {
   const data = event.data?.json() || {
-    title: 'Seenly',
-    body: 'Hay nuevas actualizaciones disponibles',
-    icon: './icon-192.png'
+    title: 'Novedades en Seenly',
+    body: 'Tienes actualizaciones disponibles',
+    actions: [{ action: 'ver', title: 'Abrir' }],
+    data: { url: '/' }
   };
 
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: data.icon,
-      badge: './icon-192.png',
+      icon: '/mi-lista-contenidos/icons/icon-192.png',
+      badge: '/mi-lista-contenidos/icons/icon-96.png',
+      image: data.image || '/mi-lista-contenidos/images/notificacion.jpg',
       vibrate: [200, 100, 200],
-      data: { url: data.url || './' }
+      data: data.data,
+      actions: data.actions
     })
   );
 });
 
-self.addEventListener('notificationclick', event => {
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const url = event.notification.data.url;
+
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-      for (const client of clientList) {
-        if ('focus' in client) return client.focus();
-      }
-      return clients.openWindow(event.notification.data.url);
+    clients.matchAll({ type: 'window' }).then((clientList) => {
+      const focusedClient = clientList.find(c => c.url === url);
+      return focusedClient ? focusedClient.focus() : clients.openWindow(url);
     })
   );
 });
-
 

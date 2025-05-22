@@ -1,148 +1,165 @@
 <!DOCTYPE html>
-<html lang="es" dir="ltr">
+<html lang="es" dir="ltr" data-pwa="false">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Seenly - Tu historial visual</title>
-  <meta name="description" content="Seenly te ayuda a organizar las películas, series y documentales que has visto o quieres ver.">
+  <meta name="description" content="Organiza y gestiona tu historial de películas, series y documentales vistos o pendientes">
 
-  <!-- PWA -->
+  <!-- SEO y Social -->
+  <meta property="og:title" content="Seenly - Tu historial visual">
+  <meta property="og:image" content="/mi-lista-contenidos/images/social-share.jpg">
+  <meta property="og:url" content="https://tudominio.com/mi-lista-contenidos">
+  
+  <!-- PWA Meta -->
   <link rel="manifest" href="/mi-lista-contenidos/manifest.json" crossorigin="use-credentials">
-  <meta name="theme-color" content="#3498db">
-  <meta name="background-color" content="#ffffff">
+  <meta name="theme-color" content="#3498db" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#2c3e50" media="(prefers-color-scheme: dark)">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Seenly">
 
-  <!-- Icons -->
-  <link rel="icon" href="/mi-lista-contenidos/icon-192.png" sizes="192x192" type="image/png">
-  <link rel="apple-touch-icon" href="/mi-lista-contenidos/icon-192.png">
+  <!-- Iconos y Recursos -->
+  <link rel="icon" href="/mi-lista-contenidos/icons/icon-192-any.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="/mi-lista-contenidos/icons/icon-192-any.png">
+  <link rel="apple-touch-startup-image" href="/mi-lista-contenidos/icons/splash.png">
 
-  <!-- Preloads y estilos -->
+  <!-- Preloads y Fuentes -->
   <link rel="preload" href="/mi-lista-contenidos/style.css" as="style">
   <link rel="preload" href="/mi-lista-contenidos/script.js" as="script">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="/mi-lista-contenidos/style.css">
+  
+  <!-- Critical CSS -->
+  <style>
+    :root { --primary: #3498db; --background: #ffffff; }
+    #splash-screen { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100dvh; 
+      background: var(--background); 
+      z-index: 9999; 
+      display: grid; 
+      place-items: center; 
+      animation: fadeOut 1s ease 2s forwards;
+    }
+    @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+  </style>
 </head>
-<body>
 
-  <div id="splash-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background-color:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;">
-    <img src="/mi-lista-contenidos/icons/splash.png" alt="Splash Seenly" style="max-width:60%;height:auto;">
+<body>
+  <!-- Splash Screen -->
+  <div id="splash-screen" role="status" aria-label="Cargando aplicación">
+    <svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="40" stroke="#3498db" stroke-width="8" fill="none" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
   </div>
 
-  <button id="boton-instalar" hidden>📲 Instalar App</button>
+  <!-- App Shell -->
+  <div id="app-container">
+    <header role="banner">
+      <h1>Seenly 🎬</h1>
+      <button id="boton-instalar" class="fab" aria-label="Instalar aplicación" hidden>
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 12h-2v3h-3v2h5v-5M7 9h3V7H5v5h2V9m14-6H3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-8 3h2v2h-2V6M9 6h2v2H9V6m6 12h-2v-2h2v2m-4 0H9v-2h2v2m4-4h-2v-2h2v2m-4 0H9v-2h2v2m-4-4H5V8h2v2m12 0h-2V8h2v2Z"/>
+        </svg>
+      </button>
+    </header>
 
-  <header>
-    <h1>Mi lista de Películas, Series y Documentales</h1>
-  </header>
+    <main role="main">
+      <!-- Contenido principal -->
+    </main>
 
-  <main>
-    <!-- Formulario -->
-    <section aria-labelledby="form-title">
-      <h2 id="form-title" class="visually-hidden">Formulario de contenido</h2>
-      <form id="formulario">
-        <label for="tipo">Tipo:</label>
-        <select id="tipo">
-          <option value="Película">Película</option>
-          <option value="Serie">Serie</option>
-          <option value="Documental">Documental</option>
-        </select>
-
-        <label for="titulo">Título:</label>
-        <input type="text" id="titulo" placeholder="Ej: El Padrino" required>
-
-        <label for="plataforma">Plataforma:</label>
-        <input type="text" id="plataforma" placeholder="Netflix, HBO...">
-
-        <div id="datos-serie" hidden>
-          <label for="temporada">Temporada:</label>
-          <input type="number" id="temporada" min="1" value="1">
-
-          <label for="episodio">Episodio:</label>
-          <input type="number" id="episodio" min="1" value="1">
-        </div>
-
-        <label for="estado">Estado:</label>
-        <select id="estado">
-          <option value="Pendiente">Pendiente</option>
-          <option value="En progreso">En progreso</option>
-          <option value="Visto">Visto</option>
-        </select>
-
-        <label for="nota">Nota personal:</label>
-        <textarea id="nota" placeholder="¿Te gustó? ¿La recomiendas?"></textarea>
-
-        <button type="submit" id="boton-enviar">Añadir</button>
-      </form>
-    </section>
-
-    <!-- Filtros -->
-    <section>
-      <h2>Contenido guardado</h2>
-      <div id="filtros">
-        <input id="buscador" placeholder="Buscar...">
-        <select id="filtro-tipo">
-          <option value="">Todos</option>
-          <option value="Película">Películas</option>
-          <option value="Serie">Series</option>
-          <option value="Documental">Documentales</option>
-        </select>
-        <input id="filtro-plataforma" placeholder="Filtrar por plataforma">
-        <button id="boton-exportar" type="button">Exportar (.json)</button>
-        <label for="importar-json" class="btn">Importar</label>
-        <input type="file" id="importar-json" accept=".json" hidden>
-      </div>
-      <div id="estadisticas" aria-live="polite"></div>
-      <ul id="lista-contenido" aria-label="Lista de contenidos guardados"></ul>
-    </section>
-  </main>
+    <!-- Notificaciones y Estado -->
+    <div id="snackbar" role="alert" aria-live="assertive"></div>
+    <div id="offline-status" role="alert" aria-live="polite" hidden>
+      ⚡ Modo offline - Los cambios se guardarán localmente
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="/mi-lista-contenidos/script.js" defer></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Splash
-      setTimeout(() => {
-        document.getElementById('splash-screen')?.remove();
-      }, 1000);
+    // ===== SERVICE WORKER REGISTRATION =====
+    if ('serviceWorker' in navigator) {
+      const registerSW = async () => {
+        try {
+          const registration = await navigator.serviceWorker.register('/mi-lista-contenidos/sw.js');
+          
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateNotification();
+              }
+            });
+          });
 
-      // Mostrar campos si es serie
-      document.getElementById('tipo').addEventListener('change', function () {
-        document.getElementById('datos-serie').hidden = this.value !== 'Serie';
+          return registration;
+        } catch (error) {
+          console.error('SW registration failed:', error);
+        }
+      };
+
+      const showUpdateNotification = () => {
+        const snackbar = document.getElementById('snackbar');
+        snackbar.textContent = '¡Nueva versión disponible! Haz clic para actualizar';
+        snackbar.classList.add('show');
+        snackbar.addEventListener('click', () => {
+          window.location.reload();
+          snackbar.classList.remove('show');
+        });
+      };
+
+      window.addEventListener('load', registerSW);
+    }
+
+    // ===== PWA INSTALLATION HANDLER =====
+    let deferredPrompt;
+    const installButton = document.getElementById('boton-instalar');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installButton.hidden = false;
+      
+      installButton.addEventListener('click', async () => {
+        installButton.disabled = true;
+        try {
+          await deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            console.log('PWA installed successfully');
+            installButton.hidden = true;
+          }
+        } finally {
+          deferredPrompt = null;
+        }
       });
-
-      // Instalar PWA
-      let deferredPrompt;
-      const btn = document.getElementById('boton-instalar');
-
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        btn.hidden = false;
-      });
-
-      btn.addEventListener('click', async () => {
-        deferredPrompt.prompt();
-        const res = await deferredPrompt.userChoice;
-        if (res.outcome === 'accepted') btn.hidden = true;
-        deferredPrompt = null;
-      });
-
-      // Verificar instalación
-      const standalone = window.matchMedia('(display-mode: standalone)').matches;
-      if (standalone) document.documentElement.setAttribute('data-pwa', 'true');
     });
 
-    // Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/mi-lista-contenidos/sw.js')
-          .then(reg => console.log('SW registrado:', reg.scope))
-          .catch(err => console.error('SW error:', err));
-      });
-    }
+    // ===== CONNECTIVITY HANDLING =====
+    const updateOnlineStatus = () => {
+      document.getElementById('offline-status').hidden = navigator.onLine;
+    };
+    
+    window.addEventListener('online', () => {
+      updateOnlineStatus();
+      document.dispatchEvent(new Event('connectionRestored'));
+    });
+    
+    window.addEventListener('offline', () => {
+      updateOnlineStatus();
+      document.dispatchEvent(new Event('connectionLost'));
+    });
+
+    // Initial status check
+    updateOnlineStatus();
   </script>
 </body>
 </html>
-
-

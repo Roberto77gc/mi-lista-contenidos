@@ -22,22 +22,24 @@
       "purpose": "any"
     },
     {
-      "src": "icons/icon-192-maskable.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
       "src": "icons/icon-512-any.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
+      "src": "icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable",
+      "label": "Icono adaptable (sin bordes)"
+    },
+    {
       "src": "icons/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "maskable",
+      "label": "Icono adaptable (sin bordes)"
     }
   ],
   "screenshots": [
@@ -46,16 +48,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "label": "Pantalla principal",
-      "form_factor": "wide",
-      "platform": "wide"
+      "form_factor": "wide"
     },
     {
       "src": "images/screenshot-2.png",
       "sizes": "750x1334",
       "type": "image/png",
       "label": "Vista móvil",
-      "form_factor": "narrow",
-      "platform": "narrow"
+      "form_factor": "narrow"
     }
   ],
   "shortcuts": [
@@ -63,69 +63,28 @@
       "name": "Añadir nuevo",
       "short_name": "Nuevo",
       "description": "Añadir nuevo contenido",
-      "url": "./?new=true",
+      "url": "/mi-lista-contenidos/?new=true",
       "icons": [{ "src": "icons/icon-add.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Mis favoritos",
       "short_name": "Favoritos",
       "description": "Ver contenido favorito",
-      "url": "./?filter=favorites",
+      "url": "/mi-lista-contenidos/?filter=favorites",
       "icons": [{ "src": "icons/icon-fav.png", "sizes": "96x96", "type": "image/png" }]
-    }
-  ],
-  "file_handlers": [
-    {
-      "action": "./import",
-      "accept": {
-        "application/json": [".json"]
-      },
-      "icons": [{ "src": "icons/icon-import.png", "sizes": "96x96", "type": "image/png" }],
-      "launch_type": "single-client"
-    }
-  ],
-  "share_target": {
-    "action": "./share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
-      "files": [
-        {
-          "name": "file",
-          "accept": ["image/*", ".pdf", "text/plain"]
-        }
-      ]
-    }
-  },
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "protocol_handlers": [
-    {
-      "protocol": "web+seenly",
-      "url": "./?url=%s"
     }
   ],
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "permissions": [
-    "clipboard-write",
-    "fileSystem"
-  ],
-  "capture_links": "new-client",
-  "handle_links": "preferred",
-  "iarc_rating_id": "pending",
-  "prefer_related_applications": false,
-  "related_applications": [
+  "protocol_handlers": [
     {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.seenly.app",
-      "id": "com.seenly.app"
+      "protocol": "web+seenly",
+      "url": "/mi-lista-contenidos/?url=%s"
     }
-  ]
+  ],
+  "permissions": [
+    "clipboard-write"
+  ],
+  "prefer_related_applications": false
 }
-
