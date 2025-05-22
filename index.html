@@ -21,8 +21,8 @@
   <meta name="apple-mobile-web-app-title" content="Seenly">
 
   <!-- Iconos y Recursos -->
-  <link rel="icon" href="/mi-lista-contenidos/icons/icon-192-any.png" sizes="192x192" type="image/png">
-  <link rel="apple-touch-icon" href="/mi-lista-contenidos/icons/icon-192-any.png">
+  <link rel="icon" href="/mi-lista-contenidos/icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="/mi-lista-contenidos/icons/icon-192.png">
   <link rel="apple-touch-startup-image" href="/mi-lista-contenidos/icons/splash.png">
 
   <!-- Preloads y Fuentes -->
@@ -39,11 +39,12 @@
       top: 0; 
       left: 0; 
       width: 100%; 
-      height: 100dvh; 
+      height: 100%; 
       background: var(--background); 
       z-index: 9999; 
-      display: grid; 
-      place-items: center; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
       animation: fadeOut 1s ease 2s forwards;
     }
     @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
@@ -65,101 +66,135 @@
     <header role="banner">
       <h1>Seenly 🎬</h1>
       <button id="boton-instalar" class="fab" aria-label="Instalar aplicación" hidden>
-        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M19 12h-2v3h-3v2h5v-5M7 9h3V7H5v5h2V9m14-6H3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-8 3h2v2h-2V6M9 6h2v2H9V6m6 12h-2v-2h2v2m-4 0H9v-2h2v2m4-4h-2v-2h2v2m-4 0H9v-2h2v2m-4-4H5V8h2v2m12 0h-2V8h2v2Z"/>
-        </svg>
+        <svg aria-hidden="true"><use href="#icon-download"/></svg>
       </button>
     </header>
 
     <main role="main">
-      <!-- Contenido principal -->
+      <!-- Formulario -->
+      <section aria-labelledby="form-title" class="card">
+        <h2 id="form-title" class="visually-hidden">Añadir nuevo contenido</h2>
+        <form id="formulario" class="grid-form">
+          <!-- Campos del formulario mejorados -->
+          <div class="form-group">
+            <label for="tipo">Tipo de contenido</label>
+            <select id="tipo" required>
+              <option value="" hidden>Seleccionar...</option>
+              <option value="Película">Película</option>
+              <option value="Serie">Serie</option>
+              <option value="Documental">Documental</option>
+            </select>
+          </div>
+          
+          <!-- Resto de campos con mejor semántica -->
+        </form>
+      </section>
+
+      <!-- Listado y Filtros -->
+      <section aria-labelledby="list-title">
+        <div class="toolbar">
+          <div role="search">
+            <input id="buscador" type="search" placeholder="Buscar..." aria-label="Buscar en contenido">
+          </div>
+          <div class="filter-group">
+            <!-- Filtros accesibles -->
+          </div>
+        </div>
+        
+        <!-- Lista con virtual scroll para mejor rendimiento -->
+        <div id="lista-contenido" role="list" aria-label="Lista de contenidos" class="virtual-scroll">
+          <!-- Template para items -->
+          <template id="item-template">
+            <li role="listitem" class="content-item">
+              <div class="item-header">
+                <h3 class="item-title"></h3>
+                <span class="item-type"></span>
+              </div>
+              <!-- Más detalles -->
+            </li>
+          </template>
+        </div>
+      </section>
     </main>
 
     <!-- Notificaciones y Estado -->
     <div id="snackbar" role="alert" aria-live="assertive"></div>
-    <div id="offline-status" role="alert" aria-live="polite" hidden>
-      ⚡ Modo offline - Los cambios se guardarán localmente
-    </div>
+    <div id="offline-status" role="alert" aria-live="polite" hidden>⚡ Modo offline</div>
   </div>
 
   <!-- Scripts -->
   <script src="/mi-lista-contenidos/script.js" defer></script>
   <script>
-    // ===== SERVICE WORKER REGISTRATION =====
-    if ('serviceWorker' in navigator) {
-      const registerSW = async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('/mi-lista-contenidos/sw.js');
-          
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showUpdateNotification();
-              }
-            });
-          });
-
-          return registration;
-        } catch (error) {
-          console.error('SW registration failed:', error);
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Gestión de estado PWA
+      const updatePWAStatus = () => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        document.documentElement.setAttribute('data-pwa', isStandalone);
       };
-
-      const showUpdateNotification = () => {
-        const snackbar = document.getElementById('snackbar');
-        snackbar.textContent = '¡Nueva versión disponible! Haz clic para actualizar';
-        snackbar.classList.add('show');
-        snackbar.addEventListener('click', () => {
-          window.location.reload();
-          snackbar.classList.remove('show');
-        });
-      };
-
-      window.addEventListener('load', registerSW);
-    }
-
-    // ===== PWA INSTALLATION HANDLER =====
-    let deferredPrompt;
-    const installButton = document.getElementById('boton-instalar');
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installButton.hidden = false;
       
-      installButton.addEventListener('click', async () => {
-        installButton.disabled = true;
-        try {
-          await deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            console.log('PWA installed successfully');
+      // Service Worker con actualizaciones
+      if ('serviceWorker' in navigator) {
+        const registerSW = async () => {
+          try {
+            const reg = await navigator.serviceWorker.register('/mi-lista-contenidos/sw.js');
+            
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  showUpdateAlert();
+                }
+              });
+            });
+          } catch (error) {
+            console.error('SW registration failed:', error);
+          }
+        };
+
+        const showUpdateAlert = () => {
+          const snackbar = document.getElementById('snackbar');
+          snackbar.textContent = '¡Nueva versión disponible!';
+          snackbar.classList.add('show');
+          snackbar.addEventListener('click', () => window.location.reload());
+        };
+
+        window.addEventListener('load', registerSW);
+        navigator.serviceWorker.addEventListener('controllerchange', updatePWAStatus);
+      }
+
+      // Gestión offline
+      const updateOnlineStatus = () => {
+        document.getElementById('offline-status').hidden = navigator.onLine;
+      };
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
+      updateOnlineStatus();
+
+      // Instalación PWA mejorada
+      let deferredPrompt;
+      const installButton = document.getElementById('boton-instalar');
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installButton.hidden = false;
+        
+        installButton.addEventListener('click', async () => {
+          installButton.disabled = true;
+          try {
+            await deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              ga('send', 'event', 'PWA', 'install');
+            }
+          } finally {
+            deferredPrompt = null;
             installButton.hidden = true;
           }
-        } finally {
-          deferredPrompt = null;
-        }
+        });
       });
     });
-
-    // ===== CONNECTIVITY HANDLING =====
-    const updateOnlineStatus = () => {
-      document.getElementById('offline-status').hidden = navigator.onLine;
-    };
-    
-    window.addEventListener('online', () => {
-      updateOnlineStatus();
-      document.dispatchEvent(new Event('connectionRestored'));
-    });
-    
-    window.addEventListener('offline', () => {
-      updateOnlineStatus();
-      document.dispatchEvent(new Event('connectionLost'));
-    });
-
-    // Initial status check
-    updateOnlineStatus();
   </script>
 </body>
 </html>
+

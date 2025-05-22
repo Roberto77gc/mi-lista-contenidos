@@ -1,22 +1,21 @@
-// ===== CONFIGURACIÓN =====
-const CORE_CACHE = 'seenly-core-v2';
+const CORE_CACHE = 'seenly-core-v2'; // Incrementa versión al actualizar
 const DYNAMIC_CACHE = 'seenly-dynamic-v2';
-const OFFLINE_PAGE = '/mi-lista-contenidos/fallback.html';
-const FALLBACK_IMAGE = '/mi-lista-contenidos/images/fallback.jpg';
+const OFFLINE_PAGE = './fallback.html';
+const FALLBACK_IMAGE = './images/fallback.jpg';
 
 const CORE_ASSETS = [
-  '/mi-lista-contenidos/',
-  '/mi-lista-contenidos/index.html',
-  '/mi-lista-contenidos/style.css',
-  '/mi-lista-contenidos/script.js',
-  '/mi-lista-contenidos/manifest.json',
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './manifest.json',
   OFFLINE_PAGE,
   FALLBACK_IMAGE,
-  '/mi-lista-contenidos/icons/icon-192-any.png',
-  '/mi-lista-contenidos/icons/icon-512-any.png'
+  './icon-192-any.png',
+  './icon-512-any.png'
 ];
 
-// ===== ESTRATEGIAS =====
+// ===== STRATEGIES =====
 const networkFirst = async (request) => {
   try {
     const networkResponse = await fetch(request);
@@ -30,24 +29,24 @@ const networkFirst = async (request) => {
 };
 
 const staleWhileRevalidate = async (request) => {
-  const cache = await caches.open(DYNAMIC_CACHE);
   try {
     const [cacheResponse, networkResponse] = await Promise.all([
-      cache.match(request),
+      caches.match(request),
       fetch(request)
     ]);
 
-    if (networkResponse?.ok) {
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE);
       cache.put(request, networkResponse.clone());
     }
 
     return cacheResponse || networkResponse;
   } catch (err) {
-    return cache.match(request);
+    return caches.match(request);
   }
 };
 
-// ===== INSTALACIÓN =====
+// ===== LIFECYCLE =====
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CORE_CACHE)
@@ -56,28 +55,27 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// ===== ACTIVACIÓN =====
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
       keys.map(key => ![CORE_CACHE, DYNAMIC_CACHE].includes(key) && caches.delete(key))
-    ))
-    .then(() => self.clients.claim())
+    )).then(() => self.clients.claim())
   );
 });
 
-// ===== MANEJO DE PETICIONES =====
+// ===== INTELLIGENT FETCH =====
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Excluir solicitudes externas y no GET
-  if (!url.origin.includes(self.location.origin) || request.method !== 'GET') return;
+  // Excluir solicitudes externas y POST
+  if (!url.origin.includes(self.location.origin)) return;
+  if (request.method !== 'GET') return;
 
   // Estrategias por tipo de recurso
   if (request.destination === 'document') {
     event.respondWith(networkFirst(request));
-  } else if (url.pathname.startsWith('/mi-lista-contenidos/api/')) {
+  } else if (request.url.includes('/api/')) {
     event.respondWith(networkFirst(request));
   } else if (['style', 'script', 'image'].includes(request.destination)) {
     event.respondWith(staleWhileRevalidate(request));
@@ -86,22 +84,22 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// ===== SINCRONIZACIÓN EN SEGUNDO PLANO =====
+// ===== BACKGROUND SYNC (MEJORADO) =====
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-contenidos') {
-    event.waitUntil(syncPendingData());
+  if (event.tag === 'sync-queue') {
+    event.waitUntil(processQueue());
   }
 });
 
-const syncPendingData = async () => {
+const processQueue = async () => {
   const cache = await caches.open(DYNAMIC_CACHE);
-  const pending = await cache.keys()
+  const queue = await cache.keys()
     .then(keys => keys.filter(key => 
       key.url.includes('/api/') && 
       ['POST', 'PUT'].includes(key.method)
     ));
 
-  for (const req of pending) {
+  for (const req of queue) {
     try {
       const body = await req.json();
       const response = await fetch(req.url, {
@@ -112,30 +110,30 @@ const syncPendingData = async () => {
       
       if (response.ok) await cache.delete(req);
     } catch (err) {
-      console.log('[SW] Error en sincronización, reintentando...');
+      console.log('[SW] Sync fallido, reintentando...');
       return Promise.reject(err);
     }
   }
 };
 
-// ===== NOTIFICACIONES PUSH =====
+// ===== PUSH NOTIFICATIONS (MEJORADO) =====
 self.addEventListener('push', (event) => {
-  const data = event.data?.json() || {
-    title: 'Novedades en Seenly',
-    body: 'Tienes actualizaciones disponibles',
-    actions: [{ action: 'ver', title: 'Abrir' }],
-    data: { url: '/' }
+  const notificationData = event.data?.json() || {
+    title: 'Seenly',
+    body: 'Actualización disponible',
+    actions: [{ action: 'view', title: 'Ver' }],
+    data: { url: './' }
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/mi-lista-contenidos/icons/icon-192.png',
-      badge: '/mi-lista-contenidos/icons/icon-96.png',
-      image: data.image || '/mi-lista-contenidos/images/notificacion.jpg',
-      vibrate: [200, 100, 200],
-      data: data.data,
-      actions: data.actions
+    self.registration.showNotification(notificationData.title, {
+      body: notificationData.body,
+      icon: './icon-192-any.png',
+      badge: './icon-96.png',
+      image: './images/notification-banner.jpg',
+      vibrate: [300, 100, 400],
+      data: notificationData.data,
+      actions: notificationData.actions
     })
   );
 });
