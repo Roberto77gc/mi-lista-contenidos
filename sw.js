@@ -12,8 +12,8 @@ const CORE_ASSETS = [
   '/mi-lista-contenidos/manifest.json',
   OFFLINE_PAGE,
   FALLBACK_IMAGE,
-  '/mi-lista-contenidos/icons/icon-192.png',
-  '/mi-lista-contenidos/icons/icon-512.png'
+  '/mi-lista-contenidos/icons/icon-192-any.png',
+  '/mi-lista-contenidos/icons/icon-512-any.png'
 ];
 
 // ===== ESTRATEGIAS =====
