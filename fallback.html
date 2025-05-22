@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sin conexión | Seenly</title>
-  <meta name="description" content="Estás sin conexión. Seenly seguirá funcionando con los datos guardados en tu dispositivo.">
+  <meta name="description" content="Estás sin conexión. Seenly seguirá funcionando con los datos guardados en tu dispositivo." />
   <meta name="theme-color" content="#3498db" />
 
   <style>
@@ -56,9 +56,9 @@
   </style>
 </head>
 <body>
-  <main role="main">
-    <img src="./icon-192.png" alt="Logo de Seenly" />
-    <h1>Estás offline</h1>
+  <main role="main" aria-labelledby="offline-title">
+    <img src="./icon-192-any.png" alt="Logo de Seenly" />
+    <h1 id="offline-title">Estás offline</h1>
     <p>La app seguirá funcionando con los datos que ya tienes guardados. Cuando recuperes conexión, se sincronizará automáticamente.</p>
     <button onclick="location.reload()">🔄 Reintentar</button>
   </main>

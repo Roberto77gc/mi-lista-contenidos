@@ -1,35 +1,73 @@
-# Seenly – Tu historial visual 📽️✅
+# 🎬 Seenly – Tu Historial Visual
 
-**Seenly** es una aplicación web progresiva (PWA) que te permite gestionar y organizar de forma sencilla tu historial visual: películas, series y documentales que has visto o que deseas ver.  
-
-Pensada para ser ligera, rápida y funcional en cualquier dispositivo, incluso sin conexión a internet.  
-Disponible como app instalable, totalmente gratuita y sin registro.
+**Seenly** es una app web progresiva (PWA) que te permite organizar y registrar todo el contenido audiovisual que ves: películas, series y documentales.  
+Guarda, filtra, edita, marca como "visto" y obtén estadísticas inteligentes de tu actividad de visionado.
 
 ---
 
-## 🌟 Funcionalidades principales
+## 🚀 Características principales
 
-- 📋 Añadir películas, series y documentales
-- 📱 Interfaz adaptada para móviles
-- 📝 Guardar nota personal y estado de cada contenido
-- 🔍 Filtros y buscador en tiempo real
-- 💾 Exportar e importar tus datos en formato `.json`
-- 🆓 Funciona offline y puede instalarse como app
-- 📦 Sincronización y caché optimizados mediante Service Worker
+✅ Registro rápido de películas, series y documentales  
+✅ Campos para temporadas, episodios, notas y estado (visto, pendiente, en progreso)  
+✅ Filtros por tipo, plataforma o búsqueda por texto  
+✅ Estadísticas visuales y estimación de horas vistas  
+✅ Instalación como app (PWA) en móvil y escritorio  
+✅ Funciona **offline** gracias a Service Workers  
+✅ Exportación/Importación en formato JSON  
+✅ Diseño responsive y accesible
 
 ---
 
-## 📦 Instalación
+## 📱 Instala la app (PWA)
 
-### ▶️ Como app en el navegador
-1. Abre [Seenly](https://roberto77gc.github.io/mi-lista-contenidos/)
-2. Pulsa el botón `Instalar` o usa el menú del navegador
-3. ¡Listo! Tendrás tu historial visual disponible como app
+1. Abre la app desde tu navegador ([enlace si está online])  
+2. Haz clic en el botón `➕ Añadir a pantalla de inicio` o `Instalar`  
+3. ¡Listo! Tendrás la app como si fuera nativa en tu dispositivo
 
-### 💻 Para desarrolladores
-Clona el repositorio y abre el proyecto en tu editor de código:
+> **Requisitos**: conexión HTTPS y navegador compatible (Chrome, Edge, Firefox, etc.)
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+- **HTML5** + **CSS3** con variables y responsive design
+- **JavaScript** puro (sin frameworks)
+- **LocalStorage** para almacenamiento persistente
+- **Cache API** + **Service Worker** para modo offline
+- **Web App Manifest** optimizado para Play Store y Lighthouse
+
+---
+
+## 📤 Exporta tu contenido
+
+Puedes generar un archivo `.json` con todo tu historial.  
+También puedes importar tus datos en otro dispositivo usando el mismo botón.
+
+---
+
+## 🧪 Testing y compatibilidad
+
+| Navegador | Compatible | Notas                  |
+|-----------|------------|------------------------|
+| Chrome    | ✅         | Soporte total          |
+| Firefox   | ✅         | Soporte PWA completo   |
+| Safari    | ⚠️         | PWA parcial en iOS     |
+| Edge      | ✅         | Soporte excelente      |
+
+---
+
+## 📦 Estructura del proyecto
 
 ```bash
-git clone https://github.com/Roberto77gc/mi-lista-contenidos.git
-cd mi-lista-contenidos
-
+.
+├── index.html
+├── style.css
+├── script.js
+├── manifest.json
+├── sw.js
+├── fallback.html
+├── icons/
+│   └── (varios tamaños y versiones maskable)
+├── images/
+│   └── fallback.jpg, notification-banner.jpg, social-share.jpg
+└── README.md

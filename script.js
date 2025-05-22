@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function cargarDatos() {
-    if ('caches' in window) {
-      try {
+    try {
+      if ('caches' in window) {
         const cache = await caches.open('mis-contenidos-data');
         const response = await cache.match('./contenido');
         if (response) {
@@ -33,9 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('📂 Datos cargados desde caché');
           }
         }
-      } catch (e) {
-        console.log('⚠️ Error al cargar caché:', e);
       }
+    } catch (e) {
+      console.warn('⚠️ Error al cargar caché:', e);
     }
     mostrarContenido();
     mostrarEstadisticas();
@@ -70,21 +70,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const titulo = document.getElementById('titulo').value.trim();
-    if (!titulo) {
-      mostrarNotificacion('⚠️ Por favor ingresa un título', 'error');
-      return;
-    }
+    const titulo = document.getElementById('titulo')?.value.trim();
+    if (!titulo) return mostrarNotificacion('⚠️ Por favor ingresa un título', 'error');
 
     const nuevoItem = {
       id: Date.now().toString(),
       tipo: tipo.value,
       titulo,
-      plataforma: document.getElementById('plataforma').value.trim(),
-      temporada: tipo.value === 'Serie' ? document.getElementById('temporada').value || 1 : null,
-      episodio: tipo.value === 'Serie' ? document.getElementById('episodio').value || 1 : null,
-      nota: document.getElementById('nota').value.trim(),
-      estado: document.getElementById('estado').value,
+      plataforma: document.getElementById('plataforma')?.value.trim(),
+      temporada: tipo.value === 'Serie' ? document.getElementById('temporada')?.value || 1 : null,
+      episodio: tipo.value === 'Serie' ? document.getElementById('episodio')?.value || 1 : null,
+      nota: document.getElementById('nota')?.value.trim(),
+      estado: document.getElementById('estado')?.value,
       fecha: new Date().toISOString()
     };
 
@@ -104,13 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function guardarDatos() {
     localStorage.setItem('contenido', JSON.stringify(contenido));
-    if ('caches' in window) {
-      try {
+    try {
+      if ('caches' in window) {
         const cache = await caches.open('mis-contenidos-data');
         await cache.put('./contenido', new Response(JSON.stringify(contenido)));
-      } catch (e) {
-        console.log('⚠️ Error al guardar en caché:', e);
       }
+    } catch (e) {
+      console.log('⚠️ Error al guardar en caché:', e);
     }
     mostrarContenido();
     mostrarEstadisticas();
@@ -233,8 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function exportarDatos() {
     if (contenido.length === 0) {
-      mostrarNotificacion('⚠️ No hay datos para exportar', 'error');
-      return;
+      return mostrarNotificacion('⚠️ No hay datos para exportar', 'error');
     }
 
     const blob = new Blob([JSON.stringify({ version: 2, fechaExportacion: new Date().toISOString(), datos: contenido }, null, 2)], { type: 'application/json' });
@@ -256,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const datosImportados = parsed.version === 2 ? parsed.datos : parsed;
 
         if (!Array.isArray(datosImportados)) throw new Error('Formato inválido');
-
         if (!confirm(`¿Importar ${datosImportados.length} registros?`)) return;
 
         const nuevosIds = new Set(contenido.map(i => i.id));
@@ -289,6 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificacion = document.createElement('div');
     notificacion.className = `notificacion ${tipo}`;
     notificacion.textContent = mensaje;
+    notificacion.setAttribute('role', 'alert');
+    notificacion.setAttribute('aria-live', 'polite');
     document.body.appendChild(notificacion);
 
     setTimeout(() => notificacion.classList.add('mostrar'), 10);
@@ -300,15 +297,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function verificarPWA() {
     const requisitos = {
-      'Service Worker': !!navigator.serviceWorker?.controller,
-      'Manifest': !!document.querySelector('link[rel="manifest"]'),
-      'HTTPS': window.location.protocol === 'https:',
-      'Standalone': window.matchMedia('(display-mode: standalone)').matches
+      '✅ Service Worker': !!navigator.serviceWorker?.controller,
+      '✅ Manifest': !!document.querySelector('link[rel="manifest"]'),
+      '✅ HTTPS': location.protocol === 'https:',
+      '✅ Standalone': window.matchMedia('(display-mode: standalone)').matches
     };
     console.table(requisitos);
   }
 
-  // Splash personalizado
+  // Splash screen animación
   const splash = document.getElementById('splash-screen');
   if (splash) {
     setTimeout(() => {

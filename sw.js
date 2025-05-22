@@ -1,4 +1,4 @@
-const CORE_CACHE = 'seenly-core-v2'; // Incrementa versión al actualizar
+const CORE_CACHE = 'seenly-core-v2';
 const DYNAMIC_CACHE = 'seenly-dynamic-v2';
 const OFFLINE_PAGE = './fallback.html';
 const FALLBACK_IMAGE = './images/fallback.jpg';
@@ -15,38 +15,34 @@ const CORE_ASSETS = [
   './icon-512-any.png'
 ];
 
-// ===== STRATEGIES =====
+// ======== Estrategias de Caché ========
 const networkFirst = async (request) => {
   try {
     const networkResponse = await fetch(request);
     const cache = await caches.open(DYNAMIC_CACHE);
     cache.put(request, networkResponse.clone());
     return networkResponse;
-  } catch (err) {
+  } catch {
     const cached = await caches.match(request);
     return cached || (request.destination === 'document' ? caches.match(OFFLINE_PAGE) : undefined);
   }
 };
 
 const staleWhileRevalidate = async (request) => {
-  try {
-    const [cacheResponse, networkResponse] = await Promise.all([
-      caches.match(request),
-      fetch(request)
-    ]);
+  const cached = await caches.match(request);
+  const network = fetch(request)
+    .then(response => {
+      if (response.ok) {
+        caches.open(DYNAMIC_CACHE).then(cache => cache.put(request, response.clone()));
+      }
+      return response;
+    })
+    .catch(() => {});
 
-    if (networkResponse.ok) {
-      const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(request, networkResponse.clone());
-    }
-
-    return cacheResponse || networkResponse;
-  } catch (err) {
-    return caches.match(request);
-  }
+  return cached || network;
 };
 
-// ===== LIFECYCLE =====
+// ======== Ciclo de vida SW ========
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CORE_CACHE)
@@ -57,22 +53,26 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.map(key => ![CORE_CACHE, DYNAMIC_CACHE].includes(key) && caches.delete(key))
-    )).then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.map(key => {
+          if (![CORE_CACHE, DYNAMIC_CACHE].includes(key)) {
+            return caches.delete(key);
+          }
+        })
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// ===== INTELLIGENT FETCH =====
+// ======== Fetch ========
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Excluir solicitudes externas y POST
   if (!url.origin.includes(self.location.origin)) return;
   if (request.method !== 'GET') return;
 
-  // Estrategias por tipo de recurso
   if (request.destination === 'document') {
     event.respondWith(networkFirst(request));
   } else if (request.url.includes('/api/')) {
@@ -80,11 +80,17 @@ self.addEventListener('fetch', (event) => {
   } else if (['style', 'script', 'image'].includes(request.destination)) {
     event.respondWith(staleWhileRevalidate(request));
   } else {
-    event.respondWith(caches.match(request) || fetch(request));
+    event.respondWith(
+      caches.match(request).then(response => response || fetch(request).catch(() => {
+        if (request.destination === 'image') {
+          return caches.match(FALLBACK_IMAGE);
+        }
+      }))
+    );
   }
 });
 
-// ===== BACKGROUND SYNC (MEJORADO) =====
+// ======== Background Sync ========
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-queue') {
     event.waitUntil(processQueue());
@@ -93,32 +99,32 @@ self.addEventListener('sync', (event) => {
 
 const processQueue = async () => {
   const cache = await caches.open(DYNAMIC_CACHE);
-  const queue = await cache.keys()
-    .then(keys => keys.filter(key => 
-      key.url.includes('/api/') && 
-      ['POST', 'PUT'].includes(key.method)
-    ));
+  const keys = await cache.keys();
 
-  for (const req of queue) {
+  const apiKeys = keys.filter(req =>
+    req.url.includes('/api/') &&
+    ['POST', 'PUT'].includes(req.method)
+  );
+
+  for (const req of apiKeys) {
     try {
       const body = await req.json();
-      const response = await fetch(req.url, {
+      const res = await fetch(req.url, {
         method: req.method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
-      
-      if (response.ok) await cache.delete(req);
+
+      if (res.ok) await cache.delete(req);
     } catch (err) {
-      console.log('[SW] Sync fallido, reintentando...');
-      return Promise.reject(err);
+      console.warn('[SW] Reintento fallido en sync:', err);
     }
   }
 };
 
-// ===== PUSH NOTIFICATIONS (MEJORADO) =====
+// ======== Push Notifications ========
 self.addEventListener('push', (event) => {
-  const notificationData = event.data?.json() || {
+  const data = event.data?.json() || {
     title: 'Seenly',
     body: 'Actualización disponible',
     actions: [{ action: 'view', title: 'Ver' }],
@@ -126,14 +132,14 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification(notificationData.title, {
-      body: notificationData.body,
+    self.registration.showNotification(data.title, {
+      body: data.body,
       icon: './icon-192-any.png',
       badge: './icon-96.png',
       image: './images/notification-banner.jpg',
       vibrate: [300, 100, 400],
-      data: notificationData.data,
-      actions: notificationData.actions
+      data: data.data,
+      actions: data.actions
     })
   );
 });
@@ -143,10 +149,11 @@ self.addEventListener('notificationclick', (event) => {
   const url = event.notification.data.url;
 
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      const focusedClient = clientList.find(c => c.url === url);
-      return focusedClient ? focusedClient.focus() : clients.openWindow(url);
+    clients.matchAll({ type: 'window' }).then(clientsArr => {
+      const client = clientsArr.find(c => c.url === url);
+      return client ? client.focus() : clients.openWindow(url);
     })
   );
 });
+
 

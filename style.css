@@ -1,4 +1,4 @@
-/* ===== ESTILOS GENERALES ===== */
+/* ===== VARIABLES Y RESETEO GENERAL ===== */
 :root {
   --color-primario: #3498db;
   --color-secundario: #2ecc71;
@@ -13,6 +13,10 @@
   --transicion: all 0.3s ease;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -20,7 +24,7 @@
 }
 
 body {
-  font-family: poppins, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: var(--color-fondo);
   color: var(--color-texto);
   line-height: 1.6;
@@ -500,6 +504,16 @@ hr {
   background-color: var(--color-advertencia);
 }
 
+/* ===== ACCESIBILIDAD FOCUS ===== */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   body {
@@ -548,7 +562,8 @@ hr {
     font-size: 0.9rem;
   }
 }
-/* === SPLASH PERSONALIZADO === */
+
+/* ===== SPLASH SCREEN PERSONALIZADO ===== */
 #splash-screen {
   position: fixed;
   inset: 0;
@@ -565,3 +580,4 @@ hr {
   height: auto;
   border-radius: 12px;
 }
+
