@@ -99,7 +99,7 @@ const syncPendingData = async () => {
     .then(keys => keys.filter(key => 
       key.url.includes('/api/') && 
       ['POST', 'PUT'].includes(key.method)
-    );
+    ));
 
   for (const req of pending) {
     try {
