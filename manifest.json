@@ -17,8 +17,8 @@
   "dir": "ltr",
   "iarc_rating_id": "ES-1234-1234-1234",
   "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
+  "client_mode": ["navigate-existing", "auto"]
+},
   "screenshots": [
     {
       "src": "/mi-lista-contenidos/screenshots/screenshot1.webp",
