@@ -6,6 +6,7 @@
   "id": "/mi-lista-contenidos",
   "start_url": "/mi-lista-contenidos/?source=pwa",
   "scope": "/mi-lista-contenidos/",
+  "scope_extensions": [{"origin": "https://tudominio.com"}],
   "display": "standalone",
   "display_override": ["standalone", "browser"],
   "orientation": "portrait-primary",
@@ -14,77 +15,44 @@
   "categories": ["entertainment", "productivity", "movies"],
   "lang": "es-ES",
   "dir": "ltr",
-  "icons": [
-    {
-      "src": "icons/icon-192-any.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-512-any.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-192-maskable.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable",
-      "label": "Icono adaptable (sin bordes)"
-    },
-    {
-      "src": "icons/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable",
-      "label": "Icono adaptable (sin bordes)"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "images/screenshot-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "label": "Pantalla principal",
-      "form_factor": "wide"
-    },
-    {
-      "src": "images/screenshot-2.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "label": "Vista móvil",
-      "form_factor": "narrow"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Añadir nuevo",
-      "short_name": "Nuevo",
-      "description": "Añadir nuevo contenido",
-      "url": "/mi-lista-contenidos/?new=true",
-      "icons": [{ "src": "icons/icon-add.png", "sizes": "96x96", "type": "image/png" }]
-    },
-    {
-      "name": "Mis favoritos",
-      "short_name": "Favoritos",
-      "description": "Ver contenido favorito",
-      "url": "/mi-lista-contenidos/?filter=favorites",
-      "icons": [{ "src": "icons/icon-fav.png", "sizes": "96x96", "type": "image/png" }]
-    }
-  ],
+  "iarc_rating_id": "ES-1234-1234-1234",
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "protocol_handlers": [
+  "screenshots": [
     {
-      "protocol": "web+seenly",
-      "url": "/mi-lista-contenidos/?url=%s"
+      "src": "/mi-lista-contenidos/screenshots/screenshot1.webp",
+      "sizes": "1280x720",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Vista principal en desktop"
+    },
+    {
+      "src": "/mi-lista-contenidos/screenshots/screenshot2.webp",
+      "sizes": "750x1334",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Vista móvil"
     }
   ],
-  "permissions": [
-    "clipboard-write"
-  ],
-  "prefer_related_applications": false
+  "icons": [
+    {
+      "src": "/mi-lista-contenidos/icons/icon-192-any.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/mi-lista-contenidos/icons/icon-512-any.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/mi-lista-contenidos/icons/icon-maskable.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "maskable"
+    }
+  ]
 }
