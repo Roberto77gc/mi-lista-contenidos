@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
       episodio: tipo.value === 'Serie' ? document.getElementById('episodio')?.value || 1 : null,
       nota: document.getElementById('nota')?.value.trim(),
       estado: document.getElementById('estado')?.value,
-      fecha: new Date().toISOString()
+      fecha: new Date().toISOString(),
+      favorito: false
     };
 
     if (indiceEditando === null) {
@@ -134,6 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function mostrarContenido(listaFiltrada = contenido) {
+    // Asegurar que todos tienen campo favorito
+    listaFiltrada.forEach(item => {
+      if (typeof item.favorito === 'undefined') {
+        item.favorito = false;
+      }
+    });
+
     lista.innerHTML = listaFiltrada.length === 0
       ? '<li class="no-resultados">No se encontraron resultados. ¡Añade tu primer contenido!</li>'
       : listaFiltrada.map(item => `
@@ -154,10 +162,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="fecha">${new Date(item.fecha).toLocaleDateString()}</span>
           </div>
           <div class="acciones">
-            ${item.estado !== 'Visto' ? `<button onclick="marcarVisto('${item.id}')">✔ Visto</button>` : ''}
-            <button onclick="editar('${item.id}')">✏️ Editar</button>
-            <button onclick="eliminar('${item.id}')" class="eliminar">🗑️ Eliminar</button>
-          </div>
+          <button class="favorito" onclick="alternarFavorito('${item.id}')" title="Favorito">
+          ${item.favorito ? '❤️' : '🤍'}
+         </button>
+         ${item.estado !== 'Visto' ? `<button class="visto" onclick="marcarVisto('${item.id}')">✔ Visto</button>` : ''}
+         <button class="editar" onclick="editar('${item.id}')">✏️ Editar</button>
+          <button class="eliminar" onclick="eliminar('${item.id}')">🗑️ Eliminar</button>
+        </div>
+
         </li>
       `).join('');
   }
@@ -225,6 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
       item.estado = 'Visto';
       await guardarDatos();
       mostrarNotificacion('✅ Marcado como visto');
+    }
+  };
+
+  window.alternarFavorito = async function(id) {
+    const item = contenido.find(i => i.id === id);
+    if (item) {
+      item.favorito = !item.favorito;
+      await guardarDatos();
+      mostrarNotificacion(item.favorito ? '💖 Añadido a favoritos' : '🤍 Quitado de favoritos');
     }
   };
 
@@ -305,7 +326,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.table(requisitos);
   }
 
-  // Splash screen animación
   const splash = document.getElementById('splash-screen');
   if (splash) {
     setTimeout(() => {
@@ -316,3 +336,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   init();
 });
+

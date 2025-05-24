@@ -286,6 +286,7 @@ hr {
   font-size: 0.8rem;
 }
 
+/* ===== ACCIONES (Botones de tarjetas) CORREGIDO ===== */
 .acciones {
   display: flex;
   gap: 0.5rem;
@@ -300,6 +301,39 @@ hr {
   transition: var(--transicion);
   font-size: 0.8rem;
   font-weight: 600;
+}
+
+/* ❤️ Favorito */
+.acciones button.favorito {
+  font-size: 1.2rem;
+  background: transparent;
+  color: var(--color-primario);
+  transition: transform 0.2s ease;
+  flex: 0;
+}
+
+.acciones button.favorito:hover {
+  transform: scale(1.3);
+}
+
+/* ✔ Visto */
+.acciones button.visto {
+  background-color: var(--color-secundario);
+  color: white;
+  flex: 1;
+}
+
+/* ✏️ Editar */
+.acciones button.editar {
+  background-color: var(--color-primario);
+  color: white;
+  flex: 1;
+}
+
+/* 🗑️ Eliminar */
+.acciones button.eliminar {
+  background-color: var(--color-peligro);
+  color: white;
   flex: 1;
 }
 
@@ -307,27 +341,6 @@ hr {
   transform: translateY(-2px);
 }
 
-.acciones button:first-child {
-  background-color: var(--color-secundario);
-  color: white;
-}
-
-.acciones button:nth-child(2) {
-  background-color: var(--color-primario);
-  color: white;
-}
-
-.acciones button.eliminar {
-  background-color: var(--color-peligro);
-  color: white;
-}
-
-.no-resultados {
-  text-align: center;
-  padding: 2rem;
-  color: var(--color-texto-claro);
-  font-style: italic;
-}
 
 /* ===== ESTADÍSTICAS ===== */
 #estadisticas {
@@ -580,4 +593,54 @@ textarea:focus-visible {
   height: auto;
   border-radius: 12px;
 }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+
+  .card,
+  #formulario,
+  #filtros,
+  #estadisticas,
+  .stat-card,
+  #lista-contenido li,
+  .stats-section {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-color: #333;
+  }
+
+  input,
+  select,
+  textarea {
+    background-color: #2c2c2c;
+    color: white;
+    border-color: #555;
+  }
+
+  .estado.visto {
+    background-color: #2e7d32;
+    color: #c8f8c8;
+  }
+
+  .estado.en-progreso {
+    background-color: #fdd835;
+    color: #000;
+  }
+
+  .estado.pendiente {
+    background-color: #e53935;
+    color: #fff;
+  }
+
+  .notificacion {
+    background-color: #2c3e50;
+    color: white;
+  }
+}
+
+
+
 

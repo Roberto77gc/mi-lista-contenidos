@@ -38,7 +38,6 @@
 
   <link rel="stylesheet" href="/mi-lista-contenidos/style.css" />
 
-  <!-- Critical CSS -->
   <style>
     :root {
       --primary: #3498db;
@@ -67,21 +66,19 @@
 </head>
 
 <body>
-  <!-- Splash Screen -->
   <div id="splash-screen" role="status" aria-label="Cargando aplicación">
     <svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
       <circle cx="50" cy="50" r="40" stroke="#3498db" stroke-width="8" fill="none" stroke-linecap="round">
-        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1.5s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1.5s" repeatCount="indefinite" />
       </circle>
     </svg>
   </div>
 
-  <!-- App Shell -->
   <div id="app-container">
     <header role="banner">
       <h1>Seenly 🎬</h1>
       <button id="boton-instalar" class="fab" aria-label="Instalar aplicación" hidden>
-        <svg aria-hidden="true"><use href="#icon-download"/></svg>
+        <svg aria-hidden="true"><use href="#icon-download" /></svg>
       </button>
     </header>
 
@@ -98,37 +95,62 @@
               <option value="Documental">Documental</option>
             </select>
           </div>
+          <div id="datos-serie" style="display: none">
+            <div>
+              <label for="temporada">Temporada</label>
+              <input type="number" id="temporada" min="1" />
+            </div>
+            <div>
+              <label for="episodio">Episodio</label>
+              <input type="number" id="episodio" min="1" />
+            </div>
+          </div>
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" required />
+          <label for="plataforma">Plataforma</label>
+          <input type="text" id="plataforma" />
+          <label for="nota">Notas</label>
+          <textarea id="nota"></textarea>
+          <label for="estado">Estado</label>
+          <select id="estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En progreso">En progreso</option>
+            <option value="Visto">Visto</option>
+          </select>
+          <button type="submit" id="boton-enviar">Añadir</button>
+          <button type="button" id="boton-exportar">📤 Exportar</button>
+          <input type="file" id="importar-json" accept=".json" style="display:none" />
         </form>
       </section>
 
       <section aria-labelledby="list-title">
+        <h2 id="list-title">Mi historial</h2>
         <div class="toolbar">
           <div role="search">
             <input id="buscador" type="search" placeholder="Buscar..." aria-label="Buscar en contenido" />
           </div>
           <div class="filter-group">
-            <!-- Filtros accesibles -->
+            <label for="filtro-tipo">Tipo</label>
+            <select id="filtro-tipo">
+              <option value="">Todos</option>
+              <option value="Película">Película</option>
+              <option value="Serie">Serie</option>
+              <option value="Documental">Documental</option>
+            </select>
+            <label for="filtro-plataforma">Plataforma</label>
+            <input id="filtro-plataforma" type="text" placeholder="Netflix, HBO..." />
           </div>
         </div>
-
-        <div id="lista-contenido" role="list" aria-label="Lista de contenidos" class="virtual-scroll">
-          <template id="item-template">
-            <li role="listitem" class="content-item">
-              <div class="item-header">
-                <h3 class="item-title"></h3>
-                <span class="item-type"></span>
-              </div>
-            </li>
-          </template>
-        </div>
+        <ul id="lista-contenido" role="list" aria-label="Lista de contenidos" class="virtual-scroll"></ul>
       </section>
+
+      <section id="estadisticas"></section>
     </main>
 
     <div id="snackbar" role="alert" aria-live="assertive"></div>
     <div id="offline-status" role="alert" aria-live="polite" hidden>⚡ Modo offline</div>
   </div>
 
-  <!-- Scripts -->
   <script src="/mi-lista-contenidos/script.js" defer></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -145,7 +167,10 @@
               const newWorker = reg.installing;
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  showUpdateAlert();
+                  const snackbar = document.getElementById('snackbar');
+                  snackbar.textContent = '¡Nueva versión disponible!';
+                  snackbar.classList.add('show');
+                  snackbar.addEventListener('click', () => window.location.reload());
                 }
               });
             });
@@ -153,14 +178,6 @@
             console.error('SW registration failed:', error);
           }
         };
-
-        const showUpdateAlert = () => {
-          const snackbar = document.getElementById('snackbar');
-          snackbar.textContent = '¡Nueva versión disponible!';
-          snackbar.classList.add('show');
-          snackbar.addEventListener('click', () => window.location.reload());
-        };
-
         window.addEventListener('load', registerSW);
         navigator.serviceWorker.addEventListener('controllerchange', updatePWAStatus);
       }
@@ -198,3 +215,4 @@
   </script>
 </body>
 </html>
+
