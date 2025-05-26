@@ -1,5 +1,5 @@
 // firebase.js
-import { db } from './firebase.js';
+import { db, guardarEnFirestore, obtenerDesdeFirestore } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const formulario = document.getElementById('formulario');
@@ -24,25 +24,34 @@ document.addEventListener('DOMContentLoaded', () => {
     verificarPWA();
   }
 
-  async function cargarDatos() {
-    try {
-      if ('caches' in window) {
-        const cache = await caches.open('mis-contenidos-data');
-        const response = await cache.match('./contenido');
-        if (response) {
-          const cachedData = await response.json();
-          if (cachedData.length > 0) {
-            contenido = cachedData;
-            console.log('📂 Datos cargados desde caché');
-          }
-        }
+async function cargarDatos() {
+  try {
+    const datosRemotos = await obtenerDesdeFirestore();
+    if (datosRemotos.length > 0) {
+      contenido = datosRemotos;
+      console.log('📡 Datos cargados desde Firestore');
+      localStorage.setItem('contenido', JSON.stringify(contenido));
+    } else {
+      const local = localStorage.getItem('contenido');
+      if (local) {
+        contenido = JSON.parse(local);
+        console.log('💾 Datos cargados desde localStorage');
       }
-    } catch (e) {
-      console.warn('⚠️ Error al cargar caché:', e);
     }
-    mostrarContenido();
-    mostrarEstadisticas();
+  } catch (error) {
+    console.error('❌ Error al cargar desde Firestore:', error);
+    const local = localStorage.getItem('contenido');
+    if (local) {
+      contenido = JSON.parse(local);
+      console.log('⚠️ Fallo Firestore, se usó localStorage');
+    }
   }
+
+  mostrarContenido();
+  mostrarEstadisticas();
+}
+
+
 
   function setupEventListeners() {
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -91,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (indiceEditando === null) {
       contenido.unshift(nuevoItem);
+      await guardarEnFirestore(nuevoItem); // 🔥 Sincroniza con Firestore
     } else {
       contenido[indiceEditando] = nuevoItem;
       indiceEditando = null;
