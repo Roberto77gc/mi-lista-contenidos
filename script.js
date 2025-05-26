@@ -1,3 +1,6 @@
+// firebase.js
+import { db } from './firebase.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   const formulario = document.getElementById('formulario');
   const tipo = document.getElementById('tipo');
