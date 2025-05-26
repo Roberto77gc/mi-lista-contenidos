@@ -11,11 +11,11 @@ const CORE_ASSETS = [
   './manifest.json',
   OFFLINE_PAGE,
   FALLBACK_IMAGE,
-  './icon-192-any.png',
-  './icon-512-any.png'
+  './icons/icon-192-any.png',
+  './icons/icon-512-any.png'
 ];
 
-// ======== Estrategias de Caché ========
+// Estrategia Network First
 const networkFirst = async (request) => {
   try {
     const networkResponse = await fetch(request);
@@ -28,6 +28,7 @@ const networkFirst = async (request) => {
   }
 };
 
+// Estrategia Stale While Revalidate
 const staleWhileRevalidate = async (request) => {
   const cached = await caches.match(request);
   const network = fetch(request)
@@ -38,11 +39,10 @@ const staleWhileRevalidate = async (request) => {
       return response;
     })
     .catch(() => {});
-
   return cached || network;
 };
 
-// ======== Ciclo de vida SW ========
+// Instalación
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CORE_CACHE)
@@ -51,6 +51,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Activación
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -65,32 +66,29 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// ======== Fetch ========
+// Fetch
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  if (!url.origin.includes(self.location.origin)) return;
-  if (request.method !== 'GET') return;
+  if (!url.origin.includes(self.location.origin) || request.method !== 'GET') return;
 
   if (request.destination === 'document') {
     event.respondWith(networkFirst(request));
   } else if (request.url.includes('/api/')) {
     event.respondWith(networkFirst(request));
-  } else if (['style', 'script', 'image'].includes(request.destination)) {
+  } else if (['style', 'script', 'image', 'font'].includes(request.destination)) {
     event.respondWith(staleWhileRevalidate(request));
   } else {
     event.respondWith(
       caches.match(request).then(response => response || fetch(request).catch(() => {
-        if (request.destination === 'image') {
-          return caches.match(FALLBACK_IMAGE);
-        }
+        if (request.destination === 'image') return caches.match(FALLBACK_IMAGE);
       }))
     );
   }
 });
 
-// ======== Background Sync ========
+// Background Sync
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-queue') {
     event.waitUntil(processQueue());
@@ -101,28 +99,24 @@ const processQueue = async () => {
   const cache = await caches.open(DYNAMIC_CACHE);
   const keys = await cache.keys();
 
-  const apiKeys = keys.filter(req =>
-    req.url.includes('/api/') &&
-    ['POST', 'PUT'].includes(req.method)
-  );
-
-  for (const req of apiKeys) {
-    try {
-      const body = await req.json();
-      const res = await fetch(req.url, {
-        method: req.method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      if (res.ok) await cache.delete(req);
-    } catch (err) {
-      console.warn('[SW] Reintento fallido en sync:', err);
+  for (const req of keys) {
+    if (req.url.includes('/api/') && ['POST', 'PUT'].includes(req.method)) {
+      try {
+        const body = await req.clone().json();
+        const res = await fetch(req.url, {
+          method: req.method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (res.ok) await cache.delete(req);
+      } catch (err) {
+        console.warn('[SW] Reintento fallido en sync:', err);
+      }
     }
   }
 };
 
-// ======== Push Notifications ========
+// Push Notifications
 self.addEventListener('push', (event) => {
   const data = event.data?.json() || {
     title: 'Seenly',
@@ -134,8 +128,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: './icon-192-any.png',
-      badge: './icon-96.png',
+      icon: './icons/icon-192-any.png',
+      badge: './icons/icon-96.png',
       image: './images/notification-banner.jpg',
       vibrate: [300, 100, 400],
       data: data.data,
