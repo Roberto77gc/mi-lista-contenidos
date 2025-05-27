@@ -81,9 +81,13 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(staleWhileRevalidate(request));
   } else {
     event.respondWith(
-      caches.match(request).then(response => response || fetch(request).catch(() => {
-        if (request.destination === 'image') return caches.match(FALLBACK_IMAGE);
-      }))
+      caches.match(request).then(response => {
+        if (response) return response;
+        if (request.destination === 'image') {
+          return caches.match(FALLBACK_IMAGE).then(fallback => fallback || Response.error());
+        }
+        return fetch(request);
+      })
     );
   }
 });
@@ -149,5 +153,4 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
-
 
