@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" dir="ltr" data-pwa="false">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -12,7 +12,7 @@
     <meta property="og:title" content="Seenly – Tu historial visual" />
     <meta property="og:description" content="Organiza tu historial de películas, series y documentales vistos o pendientes." />
     <meta property="og:image" content="images/social-share.jpg" />
-    <meta property="og:url" content="https://tudominio.com/mi-lista-contenidos" />
+    <meta property="og:url" content="https://roberto77gc.github.io/mi-lista-contenidos/" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <!-- PWA -->
@@ -35,9 +35,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
-
-  <body class="min-h-screen bg-[var(--color-fondo)] text-[var(--color-texto)] font-[Poppins,sans-serif] px-4 sm:px-6 lg:px-8">
-    <!-- Splash Screen -->
+  <body>
     <div id="splash-screen" role="status" aria-label="Cargando aplicación">
       <svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="40" stroke="#3498db" stroke-width="8" fill="none" stroke-linecap="round">
@@ -46,18 +44,18 @@
       </svg>
     </div>
 
-    <!-- App Container -->
     <div id="app-container">
-      <header class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-center w-full">Seenly 🎬</h1>
-        <button id="boton-instalar" hidden>Instalar app</button>
+      <header>
+        <h1>Seenly 🎬</h1>
+        <button id="boton-instalar" aria-label="Instalar aplicación" hidden>
+          <svg aria-hidden="true"><use href="#icon-download" /></svg>
+        </button>
       </header>
 
       <main>
-        <!-- Formulario -->
-        <section aria-labelledby="form-title">
-          <h2 id="form-title" class="sr-only">Añadir nuevo contenido</h2>
-          <form id="formulario">
+        <section aria-labelledby="form-title" class="card">
+          <h2 id="form-title" class="visually-hidden">Añadir nuevo contenido</h2>
+          <form id="formulario" class="grid-form">
             <div class="form-group">
               <label for="tipo">Tipo de contenido</label>
               <select id="tipo" required>
@@ -67,7 +65,7 @@
                 <option value="Documental">Documental</option>
               </select>
             </div>
-            <div id="datos-serie" class="grid grid-cols-2 gap-4 hidden">
+            <div id="datos-serie" style="display: none">
               <div>
                 <label for="temporada">Temporada</label>
                 <input type="number" id="temporada" min="1" inputmode="numeric" />
@@ -91,18 +89,17 @@
             </select>
             <button type="submit" id="boton-enviar">Añadir</button>
             <button type="button" id="boton-exportar">📤 Exportar</button>
-            <input type="file" id="importar-json" accept=".json" class="hidden" />
+            <input type="file" id="importar-json" accept=".json" style="display:none" />
           </form>
         </section>
 
-        <!-- Historial -->
         <section aria-labelledby="list-title">
-          <h2 id="list-title" class="text-2xl font-semibold mt-8">Mi historial</h2>
-          <div class="toolbar mt-4 flex flex-wrap gap-4">
-            <div class="flex-1 min-w-[200px]">
-              <input id="buscador" type="search" placeholder="Buscar..." aria-label="Buscar en contenido" class="w-full" />
+          <h2 id="list-title">Mi historial</h2>
+          <div class="toolbar">
+            <div role="search">
+              <input id="buscador" type="search" placeholder="Buscar..." aria-label="Buscar en contenido" />
             </div>
-            <div class="flex gap-2 flex-wrap">
+            <div class="filter-group">
               <label for="filtro-tipo">Tipo</label>
               <select id="filtro-tipo">
                 <option value="">Todos</option>
@@ -114,14 +111,12 @@
               <input id="filtro-plataforma" type="text" placeholder="Netflix, HBO..." />
             </div>
           </div>
-          <ul id="lista-contenido" role="list" class="mt-6"></ul>
+          <ul id="lista-contenido" role="list" aria-label="Lista de contenidos" class="virtual-scroll"></ul>
         </section>
 
-        <!-- Estadísticas -->
-        <section id="estadisticas" class="mt-10"></section>
+        <section id="estadisticas"></section>
       </main>
 
-      <!-- Notificaciones -->
       <div id="snackbar" role="alert" aria-live="assertive"></div>
       <div id="offline-status" role="alert" aria-live="polite" hidden>⚡ Modo offline</div>
     </div>
@@ -182,3 +177,4 @@
     </script>
   </body>
 </html>
+
