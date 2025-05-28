@@ -1,5 +1,4 @@
-/* === Seenly CSS Refinado – Profesional & Elegante === */
-/* Autor: José Roberto Valido Suárez */
+/* === Seenly – Diseño Profesional Final === */
 
 :root {
   --color-primario: #3b82f6;
@@ -8,162 +7,162 @@
   --color-texto: #1f2937;
   --color-texto-claro: #6b7280;
   --color-fondo: #f9fafb;
-  --color-formulario: #ffffff;
   --color-borde: #e5e7eb;
-  --sombra: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --radio-borde: 12px;
+  --radio: 12px;
+  --sombra: 0 2px 10px rgba(0, 0, 0, 0.05);
   --transicion: all 0.3s ease;
-  --max-ancho: 960px;
 }
 
 html {
   scroll-behavior: smooth;
 }
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--color-fondo);
   color: var(--color-texto);
   padding: 20px;
-  max-width: var(--max-ancho);
+  max-width: 1000px;
   margin: auto;
   line-height: 1.6;
 }
 
-/* Títulos */
+/* === Encabezados === */
 h1 {
-  text-align: center;
+  font-size: 2.2rem;
   color: var(--color-primario);
-  font-size: 2.4rem;
-  margin-bottom: 1.5rem;
+  text-align: center;
+  margin: 2rem 0 1rem;
+  font-weight: 700;
 }
 h2 {
   font-size: 1.6rem;
   margin: 2rem 0 1rem;
+  font-weight: 600;
   border-bottom: 2px solid var(--color-borde);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
 }
 h3 {
   font-size: 1.25rem;
-  margin-bottom: 1rem;
-}
-
-/* Formulario */
-#formulario {
-  background-color: var(--color-formulario);
-  padding: 2rem;
-  border-radius: var(--radio-borde);
-  box-shadow: var(--sombra);
-  margin-bottom: 2rem;
-}
-#formulario label {
-  display: block;
-  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
   font-weight: 600;
 }
+
+/* === Formulario === */
+#formulario {
+  background-color: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+#formulario label {
+  display: block;
+  font-weight: 600;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
 #formulario input,
 #formulario select,
 #formulario textarea {
   width: 100%;
-  padding: 1rem;
+  padding: 0.9rem 1rem;
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-borde);
+  border-radius: var(--radio);
+  margin-top: 0.4rem;
   font-size: 1rem;
   background-color: #fff;
-  margin-top: 0.4rem;
+  color: var(--color-texto);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
 }
-#formulario textarea {
-  min-height: 100px;
-  resize: vertical;
-}
+
 #formulario input:focus,
 #formulario select:focus,
 #formulario textarea:focus {
   border-color: var(--color-primario);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
   outline: none;
 }
+
+#formulario textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
 #formulario button {
   margin-top: 1.5rem;
+  padding: 0.8rem;
   width: 100%;
-  padding: 0.9rem;
   background-color: var(--color-primario);
-  color: #fff;
+  color: white;
   font-weight: 600;
-  font-size: 1rem;
   border: none;
-  border-radius: var(--radio-borde);
+  border-radius: var(--radio);
+  cursor: pointer;
+  font-size: 1rem;
   transition: var(--transicion);
 }
+
 #formulario button:hover {
   background-color: #2563eb;
-  transform: translateY(-2px);
 }
 
-/* Barra de filtros */
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
+/* === Datos serie === */
+#datos-serie {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
-  margin: 1.5rem 0;
-}
-.toolbar > div {
-  flex: 1 1 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-#buscador,
-#filtro-tipo,
-#filtro-plataforma {
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-borde);
-  font-size: 1rem;
+  margin-top: 1rem;
 }
 
-/* Lista de contenidos */
+/* === Lista de contenidos === */
 #lista-contenido {
-  list-style: none;
   display: grid;
   gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin-top: 2rem;
 }
+
 #lista-contenido li {
-  background-color: var(--color-formulario);
+  background-color: #fff;
   padding: 1.5rem;
-  border-radius: var(--radio-borde);
+  border-radius: var(--radio);
   box-shadow: var(--sombra);
-  border-left: 5px solid var(--color-primario);
+  border-left: 6px solid var(--color-primario);
+  transition: var(--transicion);
 }
+
 #lista-contenido li.visto {
   border-left-color: var(--color-secundario);
   opacity: 0.95;
 }
 
-/* Etiquetas y badges */
+/* === Badges === */
 .tipo-badge {
-  display: inline-block;
   font-size: 0.75rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 1rem;
   font-weight: bold;
-  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
   color: white;
+  text-transform: uppercase;
 }
-.tipo-badge.película { background: #9b59b6; }
-.tipo-badge.serie { background: #3498db; }
-.tipo-badge.documental { background: #1abc9c; }
 
+.tipo-badge.película { background-color: #9b59b6; }
+.tipo-badge.serie { background-color: #3498db; }
+.tipo-badge.documental { background-color: #1abc9c; }
+
+/* === Estado === */
 .estado {
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 1rem;
+  font-size: 0.8rem;
   padding: 0.3rem 0.6rem;
+  font-weight: 600;
+  border-radius: 999px;
+  display: inline-block;
 }
+
 .estado.visto {
   background-color: #d1fae5;
   color: #065f46;
@@ -177,54 +176,121 @@ h3 {
   color: #991b1b;
 }
 
-/* Botón instalar */
+/* === Estadísticas === */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-card {
+  background-color: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--color-primario);
+}
+
+/* === Filtros y barra de herramientas === */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 2rem 0 1rem;
+}
+
+.toolbar > div {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+#buscador,
+#filtro-tipo,
+#filtro-plataforma {
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  font-size: 1rem;
+  background-color: #fff;
+  color: var(--color-texto);
+}
+
+/* === Botón de instalación === */
 #boton-instalar {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 9999px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.2rem;
   background-color: var(--color-secundario);
   color: white;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.9rem;
   font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   transition: var(--transicion);
 }
+
 #boton-instalar:hover {
   background-color: #0f9f76;
   transform: scale(1.05);
 }
 
-/* Modo oscuro */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #121212;
-    color: #e0e0e0;
-  }
-  #formulario,
-  #lista-contenido li {
-    background-color: #1e1e1e;
-    border-color: #333;
-  }
-  input, select, textarea {
-    background-color: #2c2c2c;
-    color: white;
-    border-color: #444;
-  }
-  .estado.visto { background-color: #14532d; color: #c8f8c8; }
-  .estado.en-progreso { background-color: #facc15; color: #1f2937; }
-  .estado.pendiente { background-color: #b91c1c; color: #fff; }
-}
-
-/* Responsive */
+/* === Responsive === */
 @media (max-width: 768px) {
   .toolbar {
     flex-direction: column;
   }
 }
 
+/* === Dark Mode === */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+
+  #formulario,
+  #lista-contenido li,
+  .stat-card {
+    background-color: #1e1e1e;
+  }
+
+  input,
+  select,
+  textarea {
+    background-color: #2c2c2c;
+    color: #fff;
+    border-color: #444;
+  }
+
+  .estado.visto {
+    background-color: #064e3b;
+    color: #6ee7b7;
+  }
+
+  .estado.en-progreso {
+    background-color: #fef08a;
+    color: #7c2d12;
+  }
+
+  .estado.pendiente {
+    background-color: #f87171;
+    color: #fff;
+  }
+}
 
 
