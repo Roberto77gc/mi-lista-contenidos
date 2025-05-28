@@ -1,16 +1,16 @@
 /* style.css – optimizado por tu PM y Diseñador Web */
 /* === VARIABLES GLOBALES Y RESETEO === */
 :root {
-  --color-primario: #3498db;
-  --color-secundario: #2ecc71;
-  --color-peligro: #e74c3c;
-  --color-advertencia: #f39c12;
-  --color-texto: #2c3e50;
-  --color-texto-claro: #7f8c8d;
-  --color-fondo: #f8f9fa;
-  --color-borde: #dfe6e9;
-  --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
-  --radio-borde: 10px;
+  --color-primario: #3b82f6; /* Azul moderno */
+  --color-secundario: #10b981; /* Verde éxito */
+  --color-peligro: #ef4444; /* Rojo alerta */
+  --color-advertencia: #f59e0b; /* Naranja advertencia */
+  --color-texto: #1f2937; /* Gris oscuro para texto */
+  --color-texto-claro: #6b7280; /* Gris claro para texto secundario */
+  --color-fondo: #f9fafb; /* Fondo blanco roto */
+  --color-borde: #e5e7eb; /* Borde gris claro */
+  --sombra: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --radio-borde: 12px;
   --transicion: all 0.3s ease;
 }
 
