@@ -1,4 +1,4 @@
-// firebase.js
+// script.js – optimizado por tu PM y Diseñador Web
 import { db, guardarEnFirestore, obtenerDesdeFirestore } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,40 +18,39 @@ document.addEventListener('DOMContentLoaded', () => {
   let indiceEditando = null;
   let deferredPrompt;
 
-  function init() {
-    cargarDatos();
+  init();
+
+  async function init() {
+    await cargarDatos();
     setupEventListeners();
     verificarPWA();
   }
 
-async function cargarDatos() {
-  try {
-    const datosRemotos = await obtenerDesdeFirestore();
-    if (datosRemotos.length > 0) {
-      contenido = datosRemotos;
-      console.log('📡 Datos cargados desde Firestore');
-      localStorage.setItem('contenido', JSON.stringify(contenido));
-    } else {
-      const local = localStorage.getItem('contenido');
-      if (local) {
-        contenido = JSON.parse(local);
-        console.log('💾 Datos cargados desde localStorage');
+  async function cargarDatos() {
+    try {
+      const remotos = await obtenerDesdeFirestore();
+      if (remotos.length) {
+        contenido = remotos;
+        localStorage.setItem('contenido', JSON.stringify(contenido));
+        console.log('📡 Firestore');
+      } else {
+        cargarDesdeLocal();
       }
+    } catch (e) {
+      console.error('❌ Firestore', e);
+      cargarDesdeLocal();
     }
-  } catch (error) {
-    console.error('❌ Error al cargar desde Firestore:', error);
+    mostrarContenido();
+    mostrarEstadisticas();
+  }
+
+  function cargarDesdeLocal() {
     const local = localStorage.getItem('contenido');
     if (local) {
       contenido = JSON.parse(local);
-      console.log('⚠️ Fallo Firestore, se usó localStorage');
+      console.log('💾 LocalStorage');
     }
   }
-
-  mostrarContenido();
-  mostrarEstadisticas();
-}
-
-
 
   function setupEventListeners() {
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -64,6 +63,7 @@ async function cargarDatos() {
     tipo.addEventListener('change', () => {
       datosSerie.style.display = tipo.value === 'Serie' ? 'block' : 'none';
     });
+
     formulario.addEventListener('submit', handleSubmit);
     buscador.addEventListener('input', debounce(aplicarFiltros, 300));
     filtroTipo.addEventListener('change', aplicarFiltros);
@@ -74,7 +74,7 @@ async function cargarDatos() {
 
   function debounce(func, wait) {
     let timeout;
-    return function executedFunction(...args) {
+    return (...args) => {
       clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
     };
@@ -83,9 +83,9 @@ async function cargarDatos() {
   async function handleSubmit(e) {
     e.preventDefault();
     const titulo = document.getElementById('titulo')?.value.trim();
-    if (!titulo) return mostrarNotificacion('⚠️ Por favor ingresa un título', 'error');
+    if (!titulo) return notificar('⚠️ Ingresa un título', 'error');
 
-    const nuevoItem = {
+    const nuevo = {
       id: Date.now().toString(),
       tipo: tipo.value,
       titulo,
@@ -99,16 +99,16 @@ async function cargarDatos() {
     };
 
     if (indiceEditando === null) {
-      contenido.unshift(nuevoItem);
-      await guardarEnFirestore(nuevoItem); // 🔥 Sincroniza con Firestore
+      contenido.unshift(nuevo);
+      await guardarEnFirestore(nuevo);
     } else {
-      contenido[indiceEditando] = nuevoItem;
+      contenido[indiceEditando] = nuevo;
       indiceEditando = null;
       botonEnviar.textContent = 'Añadir';
     }
 
     await guardarDatos();
-    mostrarNotificacion('✅ Guardado correctamente');
+    notificar('✅ Guardado');
     formulario.reset();
     datosSerie.style.display = 'none';
   }
@@ -116,12 +116,10 @@ async function cargarDatos() {
   async function guardarDatos() {
     localStorage.setItem('contenido', JSON.stringify(contenido));
     try {
-      if ('caches' in window) {
-        const cache = await caches.open('mis-contenidos-data');
-        await cache.put('./contenido', new Response(JSON.stringify(contenido)));
-      }
+      const cache = await caches.open('mis-contenidos-data');
+      await cache.put('./contenido', new Response(JSON.stringify(contenido)));
     } catch (e) {
-      console.log('⚠️ Error al guardar en caché:', e);
+      console.warn('⚠️ No se guardó en caché:', e);
     }
     mostrarContenido();
     mostrarEstadisticas();
@@ -136,53 +134,44 @@ async function cargarDatos() {
 
     localStorage.setItem('filtros', JSON.stringify(filtros));
 
-    const filtrado = contenido.filter(item => {
-      return (
-        item.titulo.toLowerCase().includes(filtros.texto) &&
-        (filtros.tipo === '' || item.tipo === filtros.tipo) &&
-        (filtros.plataforma === '' || item.plataforma?.toLowerCase().includes(filtros.plataforma))
-      );
-    });
+    const filtrados = contenido.filter(i =>
+      i.titulo.toLowerCase().includes(filtros.texto) &&
+      (filtros.tipo === '' || i.tipo === filtros.tipo) &&
+      (filtros.plataforma === '' || i.plataforma?.toLowerCase().includes(filtros.plataforma))
+    );
 
-    mostrarContenido(filtrado);
+    mostrarContenido(filtrados);
   }
 
-  function mostrarContenido(listaFiltrada = contenido) {
-    // Asegurar que todos tienen campo favorito
-    listaFiltrada.forEach(item => {
-      if (typeof item.favorito === 'undefined') {
-        item.favorito = false;
-      }
-    });
+  function mostrarContenido(lista = contenido) {
+    lista.forEach(i => { if (i.favorito === undefined) i.favorito = false; });
 
-    lista.innerHTML = listaFiltrada.length === 0
-      ? '<li class="no-resultados">No se encontraron resultados. ¡Añade tu primer contenido!</li>'
-      : listaFiltrada.map(item => `
+    lista.length === 0
+      ? lista.innerHTML = '<li class="no-resultados">No se encontraron resultados</li>'
+      : lista.innerHTML = lista.map(item => `
         <li data-id="${item.id}" class="${item.estado === 'Visto' ? 'visto' : ''}">
           <div class="contenido-header">
             <span class="tipo-badge ${item.tipo.toLowerCase()}">${item.tipo}</span>
             <h3>${item.titulo}</h3>
             ${item.plataforma ? `<span class="plataforma">${item.plataforma}</span>` : ''}
           </div>
-          ${item.tipo === 'Serie' ? `
-            <div class="serie-info">
-              <span>Temporada ${item.temporada}</span>
-              <span>Episodio ${item.episodio}</span>
-            </div>` : ''}
+          ${item.tipo === 'Serie' ? `<div class="serie-info">
+            <span>Temporada ${item.temporada}</span>
+            <span>Episodio ${item.episodio}</span>
+          </div>` : ''}
           ${item.nota ? `<p class="nota">${item.nota}</p>` : ''}
           <div class="contenido-footer">
             <span class="estado ${item.estado.toLowerCase().replace(' ', '-')}">${item.estado}</span>
             <span class="fecha">${new Date(item.fecha).toLocaleDateString()}</span>
           </div>
           <div class="acciones">
-          <button class="favorito" onclick="alternarFavorito('${item.id}')" title="Favorito">
-          ${item.favorito ? '❤️' : '🤍'}
-         </button>
-         ${item.estado !== 'Visto' ? `<button class="visto" onclick="marcarVisto('${item.id}')">✔ Visto</button>` : ''}
-         <button class="editar" onclick="editar('${item.id}')">✏️ Editar</button>
-          <button class="eliminar" onclick="eliminar('${item.id}')">🗑️ Eliminar</button>
-        </div>
-
+            <button class="favorito" onclick="alternarFavorito('${item.id}')" title="Favorito">
+              ${item.favorito ? '❤️' : '🤍'}
+            </button>
+            ${item.estado !== 'Visto' ? `<button class="visto" onclick="marcarVisto('${item.id}')">✔ Visto</button>` : ''}
+            <button class="editar" onclick="editar('${item.id}')">✏️ Editar</button>
+            <button class="eliminar" onclick="eliminar('${item.id}')">🗑️ Eliminar</button>
+          </div>
         </li>
       `).join('');
   }
@@ -192,49 +181,42 @@ async function cargarDatos() {
       total: contenido.length,
       vistos: contenido.filter(i => i.estado === 'Visto').length,
       enProgreso: contenido.filter(i => i.estado === 'En progreso').length,
-      plataformas: {},
-      tipos: {},
-      horas: contenido.reduce((sum, item) => sum + (item.tipo === 'Serie' ? (parseInt(item.episodio || 0) * 0.5) : 2), 0)
+      horas: contenido.reduce((sum, i) => sum + (i.tipo === 'Serie' ? (parseInt(i.episodio || 0) * 0.5) : 2), 0)
     };
 
-    contenido.forEach(item => {
-      stats.plataformas[item.plataforma || 'Sin especificar'] = (stats.plataformas[item.plataforma || 'Sin especificar'] || 0) + 1;
-      stats.tipos[item.tipo] = (stats.tipos[item.tipo] || 0) + 1;
-    });
-
-    const estadisticasDiv = document.getElementById('estadisticas');
-    estadisticasDiv.innerHTML = `
-      <h3>📊 Estadísticas Avanzadas</h3>
+    const contenedor = document.getElementById('estadisticas');
+    contenedor.innerHTML = `
+      <h3>📊 Estadísticas</h3>
       <div class="stats-grid">
-        <div class="stat-card"><span class="stat-number">${stats.total}</span><span class="stat-label">Total</span></div>
-        <div class="stat-card"><span class="stat-number">${stats.vistos}</span><span class="stat-label">Vistos</span></div>
-        <div class="stat-card"><span class="stat-number">${stats.enProgreso}</span><span class="stat-label">En progreso</span></div>
-        <div class="stat-card"><span class="stat-number">${Math.round(stats.horas)}h</span><span class="stat-label">Tiempo</span></div>
+        <div class="stat-card"><span class="stat-number">${stats.total}</span><span>Total</span></div>
+        <div class="stat-card"><span class="stat-number">${stats.vistos}</span><span>Vistos</span></div>
+        <div class="stat-card"><span class="stat-number">${stats.enProgreso}</span><span>En progreso</span></div>
+        <div class="stat-card"><span class="stat-number">${Math.round(stats.horas)}h</span><span>Tiempo</span></div>
       </div>
     `;
   }
 
   window.eliminar = async function(id) {
-    if (!confirm('¿Eliminar este contenido permanentemente?')) return;
-    contenido = contenido.filter(item => item.id !== id);
+    if (!confirm('¿Eliminar este contenido?')) return;
+    contenido = contenido.filter(i => i.id !== id);
     await guardarDatos();
-    mostrarNotificacion('🗑️ Contenido eliminado');
+    notificar('🗑️ Eliminado');
   };
 
   window.editar = function(id) {
-    const item = contenido.find(i => i.id === id);
-    if (!item) return;
+    const i = contenido.find(e => e.id === id);
+    if (!i) return;
 
-    indiceEditando = contenido.indexOf(item);
-    tipo.value = item.tipo;
-    document.getElementById('titulo').value = item.titulo;
-    document.getElementById('plataforma').value = item.plataforma || '';
-    document.getElementById('nota').value = item.nota || '';
-    document.getElementById('estado').value = item.estado;
+    indiceEditando = contenido.indexOf(i);
+    tipo.value = i.tipo;
+    document.getElementById('titulo').value = i.titulo;
+    document.getElementById('plataforma').value = i.plataforma || '';
+    document.getElementById('nota').value = i.nota || '';
+    document.getElementById('estado').value = i.estado;
 
-    if (item.tipo === 'Serie') {
-      document.getElementById('temporada').value = item.temporada;
-      document.getElementById('episodio').value = item.episodio;
+    if (i.tipo === 'Serie') {
+      document.getElementById('temporada').value = i.temporada;
+      document.getElementById('episodio').value = i.episodio;
       datosSerie.style.display = 'block';
     } else {
       datosSerie.style.display = 'none';
@@ -245,62 +227,58 @@ async function cargarDatos() {
   };
 
   window.marcarVisto = async function(id) {
-    const item = contenido.find(i => i.id === id);
-    if (item) {
-      item.estado = 'Visto';
+    const i = contenido.find(e => e.id === id);
+    if (i) {
+      i.estado = 'Visto';
       await guardarDatos();
-      mostrarNotificacion('✅ Marcado como visto');
+      notificar('✅ Marcado como visto');
     }
   };
 
   window.alternarFavorito = async function(id) {
-    const item = contenido.find(i => i.id === id);
-    if (item) {
-      item.favorito = !item.favorito;
+    const i = contenido.find(e => e.id === id);
+    if (i) {
+      i.favorito = !i.favorito;
       await guardarDatos();
-      mostrarNotificacion(item.favorito ? '💖 Añadido a favoritos' : '🤍 Quitado de favoritos');
+      notificar(i.favorito ? '💖 Favorito' : '🤍 No favorito');
     }
   };
 
   async function exportarDatos() {
-    if (contenido.length === 0) {
-      return mostrarNotificacion('⚠️ No hay datos para exportar', 'error');
-    }
+    if (!contenido.length) return notificar('⚠️ No hay datos', 'error');
 
-    const blob = new Blob([JSON.stringify({ version: 2, fechaExportacion: new Date().toISOString(), datos: contenido }, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify({ version: 2, fecha: new Date().toISOString(), datos: contenido }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `backup-contenidos-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    mostrarNotificacion('📤 Exportación completada');
+    notificar('📤 Exportado');
   }
 
-  async function importarDatos(event) {
-    const file = event.target.files[0];
+  async function importarDatos(e) {
+    const file = e.target.files[0];
     if (!file) return;
 
-    try {
-      const reader = new FileReader();
-      reader.onload = async e => {
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
         const parsed = JSON.parse(e.target.result);
-        const datosImportados = parsed.version === 2 ? parsed.datos : parsed;
+        const datos = parsed.version === 2 ? parsed.datos : parsed;
+        if (!Array.isArray(datos)) throw new Error('Inválido');
+        if (!confirm(`¿Importar ${datos.length} elementos?`)) return;
 
-        if (!Array.isArray(datosImportados)) throw new Error('Formato inválido');
-        if (!confirm(`¿Importar ${datosImportados.length} registros?`)) return;
-
-        const nuevosIds = new Set(contenido.map(i => i.id));
-        const nuevos = datosImportados.filter(i => !nuevosIds.has(i.id));
-
+        const existentes = new Set(contenido.map(i => i.id));
+        const nuevos = datos.filter(i => !existentes.has(i.id));
         contenido = [...nuevos, ...contenido];
         await guardarDatos();
-        mostrarNotificacion(`✅ Importados ${nuevos.length} elementos`);
+        notificar(`✅ Importados ${nuevos.length}`);
         inputImportar.value = '';
-      };
-      reader.readAsText(file);
-    } catch (error) {
-      mostrarNotificacion('❌ Error al importar', 'error');
-      console.error(error);
-    }
+      } catch (err) {
+        notificar('❌ Error al importar', 'error');
+        console.error(err);
+      }
+    };
+    reader.readAsText(file);
   }
 
   async function instalarPWA() {
@@ -308,24 +286,23 @@ async function cargarDatos() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      mostrarNotificacion('📱 App instalada correctamente');
+      notificar('📱 App instalada');
       botonInstalar.style.display = 'none';
     }
     deferredPrompt = null;
   }
 
-  function mostrarNotificacion(mensaje, tipo = 'success') {
-    const notificacion = document.createElement('div');
-    notificacion.className = `notificacion ${tipo}`;
-    notificacion.textContent = mensaje;
-    notificacion.setAttribute('role', 'alert');
-    notificacion.setAttribute('aria-live', 'polite');
-    document.body.appendChild(notificacion);
-
-    setTimeout(() => notificacion.classList.add('mostrar'), 10);
+  function notificar(mensaje, tipo = 'success') {
+    const n = document.createElement('div');
+    n.className = `notificacion ${tipo}`;
+    n.textContent = mensaje;
+    n.setAttribute('role', 'alert');
+    n.setAttribute('aria-live', 'polite');
+    document.body.appendChild(n);
+    setTimeout(() => n.classList.add('mostrar'), 10);
     setTimeout(() => {
-      notificacion.classList.remove('mostrar');
-      setTimeout(() => notificacion.remove(), 300);
+      n.classList.remove('mostrar');
+      setTimeout(() => n.remove(), 300);
     }, 3000);
   }
 
@@ -346,7 +323,4 @@ async function cargarDatos() {
       setTimeout(() => splash.remove(), 400);
     }, 800);
   }
-
-  init();
 });
-

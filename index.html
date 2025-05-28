@@ -1,168 +1,141 @@
 <!DOCTYPE html>
 <html lang="es" dir="ltr" data-pwa="false">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Seenly – Tu historial visual</title>
-  <meta name="description" content="Organiza y gestiona tu historial de películas, series y documentales vistos o pendientes." />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Seenly – Tu historial visual</title>
+    <meta name="description" content="Organiza y gestiona tu historial de películas, series y documentales vistos o pendientes." />
 
-  <!-- SEO y Social -->
-  <meta name="robots" content="index, follow" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Seenly – Tu historial visual" />
-  <meta property="og:description" content="Organiza tu historial de películas, series y documentales vistos o pendientes." />
-  <meta property="og:image" content="images/social-share.jpg" />
-  <meta property="og:url" content="https://tudominio.com/mi-lista-contenidos" />
-  <meta name="twitter:card" content="summary_large_image" />
+    <!-- SEO & Social -->
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Seenly – Tu historial visual" />
+    <meta property="og:description" content="Organiza tu historial de películas, series y documentales vistos o pendientes." />
+    <meta property="og:image" content="images/social-share.jpg" />
+    <meta property="og:url" content="https://tudominio.com/mi-lista-contenidos" />
+    <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- PWA Meta -->
-  <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
-  <meta name="theme-color" content="#3498db" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#2c3e50" media="(prefers-color-scheme: dark)" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Seenly" />
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
+    <meta name="theme-color" content="#3498db" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#2c3e50" media="(prefers-color-scheme: dark)" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seenly" />
 
-  <!-- Iconos -->
-  <link rel="icon" href="icons/icon-192-any.png" sizes="192x192" type="image/png" />
-  <link rel="apple-touch-icon" href="icons/icon-192-any.png" />
-  <link rel="apple-touch-startup-image" href="icons/splash.png" />
+    <!-- Iconos -->
+    <link rel="icon" href="icons/icon-192-any.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/icon-192-any.png" />
+    <link rel="apple-touch-startup-image" href="icons/splash.png" />
 
-  <!-- Preloads y Fuentes -->
-  <link rel="preload" href="style.css" as="style" />
-  <link rel="preload" href="script.js" as="script" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <!-- Fuentes & CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-  <link rel="stylesheet" href="style.css" />
+  <body class="min-h-screen bg-[var(--color-fondo)] text-[var(--color-texto)] font-[Poppins,sans-serif] px-4 sm:px-6 lg:px-8">
+    <!-- Splash Screen -->
+    <div id="splash-screen" role="status" aria-label="Cargando aplicación">
+      <svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="40" stroke="#3498db" stroke-width="8" fill="none" stroke-linecap="round">
+          <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1.5s" repeatCount="indefinite" />
+        </circle>
+      </svg>
+    </div>
 
-  <style>
-    :root {
-      --primary: #3498db;
-      --background: #ffffff;
-    }
-    #splash-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--background);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fadeOut 1s ease 2s forwards;
-    }
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
-    }
-  </style>
-</head>
+    <!-- App Container -->
+    <div id="app-container">
+      <header class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-center w-full">Seenly 🎬</h1>
+        <button id="boton-instalar" aria-label="Instalar aplicación" hidden class="absolute bottom-6 right-6 bg-[var(--color-secundario)] text-white px-4 py-2 rounded-full shadow-md hover:bg-[#27ae60] transition-transform duration-300"></button>
+      </header>
 
-<body>
-  <div id="splash-screen" role="status" aria-label="Cargando aplicación">
-    <svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="40" stroke="#3498db" stroke-width="8" fill="none" stroke-linecap="round">
-        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1.5s" repeatCount="indefinite" />
-      </circle>
-    </svg>
-  </div>
-
-  <div id="app-container">
-    <header role="banner">
-      <h1>Seenly 🎬</h1>
-      <button id="boton-instalar" aria-label="Instalar aplicación" hidden>
-        <svg aria-hidden="true"><use href="#icon-download" /></svg>
-      </button>
-    </header>
-
-    <main role="main">
-      <section aria-labelledby="form-title" class="card">
-        <h2 id="form-title" class="visually-hidden">Añadir nuevo contenido</h2>
-        <form id="formulario" class="grid-form">
-          <div class="form-group">
-            <label for="tipo">Tipo de contenido</label>
-            <select id="tipo" required>
-              <option value="" hidden>Seleccionar...</option>
-              <option value="Película">Película</option>
-              <option value="Serie">Serie</option>
-              <option value="Documental">Documental</option>
-            </select>
-          </div>
-          <div id="datos-serie" style="display: none">
-            <div>
-              <label for="temporada">Temporada</label>
-              <input type="number" id="temporada" min="1" inputmode="numeric" />
+      <main>
+        <!-- Formulario -->
+        <section aria-labelledby="form-title">
+          <h2 id="form-title" class="sr-only">Añadir nuevo contenido</h2>
+          <form id="formulario">
+            <div class="form-group">
+              <label for="tipo">Tipo de contenido</label>
+              <select id="tipo" required>
+                <option value="" hidden>Seleccionar...</option>
+                <option value="Película">Película</option>
+                <option value="Serie">Serie</option>
+                <option value="Documental">Documental</option>
+              </select>
             </div>
-            <div>
-              <label for="episodio">Episodio</label>
-              <input type="number" id="episodio" min="1" inputmode="numeric" />
+            <div id="datos-serie" class="grid grid-cols-2 gap-4 hidden">
+              <div>
+                <label for="temporada">Temporada</label>
+                <input type="number" id="temporada" min="1" inputmode="numeric" />
+              </div>
+              <div>
+                <label for="episodio">Episodio</label>
+                <input type="number" id="episodio" min="1" inputmode="numeric" />
+              </div>
+            </div>
+            <label for="titulo">Título</label>
+            <input type="text" id="titulo" required />
+            <label for="plataforma">Plataforma</label>
+            <input type="text" id="plataforma" />
+            <label for="nota">Notas</label>
+            <textarea id="nota"></textarea>
+            <label for="estado">Estado</label>
+            <select id="estado">
+              <option value="Pendiente">Pendiente</option>
+              <option value="En progreso">En progreso</option>
+              <option value="Visto">Visto</option>
+            </select>
+            <button type="submit" id="boton-enviar">Añadir</button>
+            <button type="button" id="boton-exportar">📤 Exportar</button>
+            <input type="file" id="importar-json" accept=".json" class="hidden" />
+          </form>
+        </section>
+
+        <!-- Historial -->
+        <section aria-labelledby="list-title">
+          <h2 id="list-title" class="text-2xl font-semibold mt-8">Mi historial</h2>
+          <div class="toolbar mt-4 flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[200px]">
+              <input id="buscador" type="search" placeholder="Buscar..." aria-label="Buscar en contenido" class="w-full" />
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <label for="filtro-tipo">Tipo</label>
+              <select id="filtro-tipo">
+                <option value="">Todos</option>
+                <option value="Película">Película</option>
+                <option value="Serie">Serie</option>
+                <option value="Documental">Documental</option>
+              </select>
+              <label for="filtro-plataforma">Plataforma</label>
+              <input id="filtro-plataforma" type="text" placeholder="Netflix, HBO..." />
             </div>
           </div>
-          <label for="titulo">Título</label>
-          <input type="text" id="titulo" required />
-          <label for="plataforma">Plataforma</label>
-          <input type="text" id="plataforma" />
-          <label for="nota">Notas</label>
-          <textarea id="nota"></textarea>
-          <label for="estado">Estado</label>
-          <select id="estado">
-            <option value="Pendiente">Pendiente</option>
-            <option value="En progreso">En progreso</option>
-            <option value="Visto">Visto</option>
-          </select>
-          <button type="submit" id="boton-enviar">Añadir</button>
-          <button type="button" id="boton-exportar">📤 Exportar</button>
-          <input type="file" id="importar-json" accept=".json" style="display:none" />
-        </form>
-      </section>
+          <ul id="lista-contenido" role="list" class="mt-6"></ul>
+        </section>
 
-      <section aria-labelledby="list-title">
-        <h2 id="list-title">Mi historial</h2>
-        <div class="toolbar">
-          <div role="search">
-            <input id="buscador" type="search" placeholder="Buscar..." aria-label="Buscar en contenido" />
-          </div>
-          <div class="filter-group">
-            <label for="filtro-tipo">Tipo</label>
-            <select id="filtro-tipo">
-              <option value="">Todos</option>
-              <option value="Película">Película</option>
-              <option value="Serie">Serie</option>
-              <option value="Documental">Documental</option>
-            </select>
-            <label for="filtro-plataforma">Plataforma</label>
-            <input id="filtro-plataforma" type="text" placeholder="Netflix, HBO..." />
-          </div>
-        </div>
-        <ul id="lista-contenido" role="list" aria-label="Lista de contenidos" class="virtual-scroll"></ul>
-      </section>
+        <!-- Estadísticas -->
+        <section id="estadisticas" class="mt-10"></section>
+      </main>
 
-      <section id="estadisticas"></section>
-    </main>
+      <!-- Notificaciones -->
+      <div id="snackbar" role="alert" aria-live="assertive"></div>
+      <div id="offline-status" role="alert" aria-live="polite" hidden>⚡ Modo offline</div>
+    </div>
 
-    <div id="snackbar" role="alert" aria-live="assertive"></div>
-    <div id="offline-status" role="alert" aria-live="polite" hidden>⚡ Modo offline</div>
-  </div>
+    <script type="module" src="script.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const updatePWAStatus = () => {
+          const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+          document.documentElement.setAttribute('data-pwa', isStandalone);
+        };
 
-  <script type="module" src="script.js" defer></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const updatePWAStatus = () => {
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        document.documentElement.setAttribute('data-pwa', isStandalone);
-      };
-
-      if ('serviceWorker' in navigator) {
-        const registerSW = async () => {
-          try {
-            const reg = await navigator.serviceWorker.register('sw.js');
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('sw.js').then(reg => {
             reg.addEventListener('updatefound', () => {
               const newWorker = reg.installing;
               newWorker.addEventListener('statechange', () => {
@@ -174,45 +147,38 @@
                 }
               });
             });
-          } catch (error) {
-            console.error('SW registration failed:', error);
-          }
+          });
+          navigator.serviceWorker.addEventListener('controllerchange', updatePWAStatus);
+        }
+
+        const updateOnlineStatus = () => {
+          document.getElementById('offline-status').hidden = navigator.onLine;
         };
-        window.addEventListener('load', registerSW);
-        navigator.serviceWorker.addEventListener('controllerchange', updatePWAStatus);
-      }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
 
-      const updateOnlineStatus = () => {
-        document.getElementById('offline-status').hidden = navigator.onLine;
-      };
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
-      updateOnlineStatus();
+        let deferredPrompt;
+        const installButton = document.getElementById('boton-instalar');
 
-      let deferredPrompt;
-      const installButton = document.getElementById('boton-instalar');
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          installButton.hidden = false;
 
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installButton.hidden = false;
-
-        installButton.addEventListener('click', async () => {
-          installButton.disabled = true;
-          try {
-            await deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-              console.log('Instalación aceptada');
+          installButton.addEventListener('click', async () => {
+            installButton.disabled = true;
+            try {
+              await deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              if (outcome === 'accepted') console.log('Instalación aceptada');
+            } finally {
+              deferredPrompt = null;
+              installButton.hidden = true;
             }
-          } finally {
-            deferredPrompt = null;
-            installButton.hidden = true;
-          }
+          });
         });
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
-
