@@ -1,26 +1,28 @@
-/* === Seenly Style – Versión Final Refinada === */
-/* Autor: José Roberto Valido Suárez + tu PM y Diseñador Web */
+/* === Seenly Style – Versión Final Profesional === */
+/* Autor: José Roberto Valido Suárez */
 
 :root {
   --color-primario: #3b82f6;
   --color-secundario: #10b981;
   --color-peligro: #ef4444;
+  --color-advertencia: #f59e0b;
   --color-texto: #1f2937;
+  --color-texto-claro: #6b7280;
   --color-fondo: #f9fafb;
   --color-borde: #e5e7eb;
   --radio-borde: 12px;
-  --sombra: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --sombra: 0 2px 8px rgba(0, 0, 0, 0.05);
   --transicion: all 0.3s ease;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 body {
@@ -34,49 +36,48 @@ body {
   min-height: 100vh;
 }
 
-/* === Títulos === */
+/* === Encabezados === */
 h1 {
   font-size: 2.4rem;
-  margin-bottom: 1rem;
+  margin: 2rem 0 1.5rem;
   text-align: center;
+  font-weight: 700;
   color: var(--color-primario);
 }
 h2 {
-  font-size: 1.8rem;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  margin: 2rem 0 1rem;
   border-bottom: 2px solid var(--color-borde);
   padding-bottom: 0.5rem;
 }
 h3 {
-  font-size: 1.3rem;
-  margin-bottom: 0.8rem;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 /* === Formulario === */
 #formulario {
-  background: white;
+  background: #ffffff;
   padding: 2rem;
   border-radius: var(--radio-borde);
   box-shadow: var(--sombra);
-  margin-bottom: 2rem;
 }
 #formulario label {
-  font-weight: 600;
   display: block;
-  margin-top: 1rem;
+  margin-top: 1.2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 #formulario input,
 #formulario select,
 #formulario textarea {
   width: 100%;
-  padding: 0.8rem 1rem;
-  margin-top: 0.4rem;
+  padding: 1rem;
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-borde);
   font-size: 1rem;
-  background-color: #fff;
-  transition: var(--transicion);
+  background-color: #ffffff;
+  margin-top: 0.4rem;
 }
 #formulario input:focus,
 #formulario select:focus,
@@ -87,32 +88,70 @@ h3 {
 }
 #formulario textarea {
   resize: vertical;
-  min-height: 90px;
+  min-height: 100px;
 }
 #formulario button {
-  margin-top: 1.5rem;
+  margin-top: 1.2rem;
   width: 100%;
-  padding: 0.9rem;
+  padding: 0.8rem;
+  background-color: var(--color-primario);
+  color: white;
   border: none;
   border-radius: var(--radio-borde);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: var(--transicion);
-  background-color: var(--color-primario);
-  color: white;
 }
 #formulario button:hover {
   background-color: #2563eb;
 }
 
-/* === Botón Exportar separado === */
-#boton-exportar {
-  background-color: #6366f1;
-  margin-top: 1rem;
+/* === Lista de Contenidos === */
+#lista-contenido {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.5rem;
+  list-style: none;
 }
-#boton-exportar:hover {
-  background-color: #4f46e5;
+#lista-contenido li {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: var(--radio-borde);
+  box-shadow: var(--sombra);
+  border-left: 6px solid var(--color-primario);
+}
+#lista-contenido li.visto {
+  border-left-color: var(--color-secundario);
+  opacity: 0.95;
+}
+.acciones {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.acciones button {
+  flex: 1 1 auto;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: var(--radio-borde);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transicion);
+}
+.acciones button.visto {
+  background-color: var(--color-secundario);
+  color: white;
+}
+.acciones button.editar {
+  background-color: var(--color-primario);
+  color: white;
+}
+.acciones button.eliminar {
+  background-color: var(--color-peligro);
+  color: white;
 }
 
 /* === Filtros y búsqueda === */
@@ -120,12 +159,13 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 2rem;
+  margin: 1.5rem 0;
 }
 .toolbar > div {
   flex: 1 1 200px;
   display: flex;
   flex-direction: column;
+  gap: 0.3rem;
 }
 #buscador,
 #filtro-tipo,
@@ -136,44 +176,25 @@ h3 {
   font-size: 1rem;
 }
 
-/* === Lista de contenido === */
-#lista-contenido {
-  margin-top: 2rem;
-  display: grid;
-  gap: 1.5rem;
-  list-style: none;
-}
-#lista-contenido li {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: var(--radio-borde);
-  border-left: 6px solid var(--color-primario);
-  box-shadow: var(--sombra);
-}
-#lista-contenido li.visto {
-  border-left-color: var(--color-secundario);
-  opacity: 0.9;
-}
-
+/* === Estado + Etiquetas === */
 .tipo-badge {
   display: inline-block;
-  padding: 0.4rem 0.8rem;
   font-size: 0.75rem;
-  font-weight: bold;
+  padding: 0.3rem 0.6rem;
+  border-radius: 9999px;
   color: white;
-  border-radius: 999px;
+  font-weight: bold;
   text-transform: uppercase;
 }
-.tipo-badge.película { background: #9b59b6; }
-.tipo-badge.serie { background: #3498db; }
-.tipo-badge.documental { background: #1abc9c; }
+.tipo-badge.película { background-color: #9b59b6; }
+.tipo-badge.serie { background-color: #3498db; }
+.tipo-badge.documental { background-color: #1abc9c; }
 
 .estado {
-  display: inline-block;
   font-size: 0.85rem;
-  font-weight: 600;
   padding: 0.3rem 0.7rem;
   border-radius: 1rem;
+  font-weight: 600;
 }
 .estado.visto {
   background-color: #e8f8f1;
@@ -181,85 +202,66 @@ h3 {
 }
 .estado.en-progreso {
   background-color: #fef9e7;
-  color: #f59e0b;
+  color: #f39c12;
 }
 .estado.pendiente {
   background-color: #fdedec;
   color: #e74c3c;
 }
 
-.acciones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-.acciones button {
-  flex: 1 1 auto;
-  padding: 0.6rem;
-  border: none;
-  border-radius: var(--radio-borde);
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: white;
-  transition: var(--transicion);
-}
-.acciones button.visto { background-color: var(--color-secundario); }
-.acciones button.editar { background-color: var(--color-primario); }
-.acciones button.eliminar { background-color: var(--color-peligro); }
-.acciones button:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-}
-
 /* === Estadísticas === */
-#estadisticas .stats-grid {
-  display: flex;
-  flex-wrap: wrap;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 }
 .stat-card {
-  background: white;
-  flex: 1 1 150px;
-  padding: 1rem;
+  background: #ffffff;
   border-radius: var(--radio-borde);
+  padding: 1rem;
   text-align: center;
   box-shadow: var(--sombra);
 }
 .stat-number {
-  font-size: 1.8rem;
-  font-weight: bold;
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
   color: var(--color-primario);
 }
 
-/* === Botón instalar === */
+/* === Botón de instalación === */
 #boton-instalar {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.9rem 1.6rem;
+  z-index: 100;
   background-color: var(--color-secundario);
   color: white;
-  border: none;
-  border-radius: 999px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   font-weight: 600;
   font-size: 0.95rem;
-  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+  cursor: pointer;
   transition: var(--transicion);
 }
 #boton-instalar::before {
-  content: "⬇";
-  font-size: 1.2rem;
+  content: "⬇ ";
 }
 #boton-instalar:hover {
-  background-color: #27ae60;
+  background-color: #0f9f76;
   transform: scale(1.05);
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+  }
+  .acciones {
+    flex-direction: column;
+  }
 }
 
 /* === Modo Oscuro === */
@@ -268,50 +270,35 @@ h3 {
     background-color: #121212;
     color: #e0e0e0;
   }
-
   #formulario,
   #lista-contenido li,
   .stat-card {
     background-color: #1e1e1e;
     border-color: #333;
   }
-
   input, select, textarea {
     background-color: #2c2c2c;
     color: white;
-    border-color: #555;
+    border-color: #444;
   }
-
+  #buscador,
+  #filtro-tipo,
+  #filtro-plataforma {
+    background-color: #2c2c2c;
+    color: white;
+  }
   .estado.visto {
     background-color: #2e7d32;
     color: #c8f8c8;
   }
-
   .estado.en-progreso {
     background-color: #fdd835;
     color: #000;
   }
-
   .estado.pendiente {
     background-color: #e53935;
     color: #fff;
   }
 }
-
-/* === Responsive === */
-@media (max-width: 768px) {
-  .toolbar {
-    flex-direction: column;
-  }
-
-  .acciones {
-    flex-direction: column;
-  }
-
-  .stats-grid {
-    flex-direction: column;
-  }
-}
-
 
 
