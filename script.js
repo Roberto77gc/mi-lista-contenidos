@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setupEventListeners() {
+    document.getElementById('boton-buscar').addEventListener('click', aplicarFiltros);
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
