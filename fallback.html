@@ -36,7 +36,7 @@
     }
 
     p {
-      max-width: 400px;
+      max-width: 420px;
       margin-bottom: 2rem;
       color: #555;
       line-height: 1.6;
@@ -53,8 +53,14 @@
       transition: background-color 0.3s ease;
     }
 
-    button:hover {
+    button:hover,
+    button:focus {
       background-color: #2980b9;
+      outline: none;
+    }
+
+    button:focus {
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.4);
     }
 
     img {
@@ -68,10 +74,12 @@
   <main role="main" aria-labelledby="offline-title">
     <img src="icons/icon-192-any.png" alt="Logo de Seenly" />
     <h1 id="offline-title">Estás sin conexión</h1>
-    <p>Seenly sigue funcionando con los datos guardados localmente. En cuanto recuperes conexión, se sincronizará automáticamente.</p>
+    <p>Seenly seguirá funcionando con los datos guardados localmente. En cuanto recuperes conexión, todo se sincronizará automáticamente.</p>
     <button onclick="location.reload()">🔄 Reintentar</button>
   </main>
 </body>
 </html>
+
+
 
 

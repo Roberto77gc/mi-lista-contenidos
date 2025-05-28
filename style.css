@@ -109,6 +109,15 @@ h3 {
   background-color: #2563eb;
 }
 
+#boton-exportar {
+  background-color: var(--color-secundario);
+  margin-top: 0.5rem;
+}
+
+#boton-exportar:hover {
+  background-color: #0f9f76;
+}
+
 /* === Datos serie === */
 #datos-serie {
   display: grid;
@@ -223,30 +232,24 @@ h3 {
   color: var(--color-texto);
 }
 
-/* === Botón de instalación === */
-#boton-instalar {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: 0.7rem 1.2rem;
-  background-color: var(--color-secundario);
-  color: white;
-  border: none;
-  border-radius: 9999px;
-  font-size: 0.9rem;
+/* === Botón de instalación elegante === */
+.boton-pwa {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--color-primario);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--sombra);
   transition: var(--transicion);
 }
 
-#boton-instalar:hover {
-  background-color: #0f9f76;
-  transform: scale(1.05);
+.boton-pwa:hover {
+  background-color: #2563eb;
 }
 
 /* === Responsive === */
@@ -290,6 +293,24 @@ h3 {
   .estado.pendiente {
     background-color: #f87171;
     color: #fff;
+  }
+
+  .boton-pwa {
+    background-color: #2980b9;
+    color: white;
+  }
+
+  .boton-pwa:hover {
+    background-color: #1c5f90;
+  }
+
+  button {
+    background-color: var(--color-primario);
+    color: white;
+  }
+
+  button:hover {
+    background-color: #2563eb;
   }
 }
 

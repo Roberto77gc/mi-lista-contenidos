@@ -3,10 +3,9 @@
   "name": "Seenly – Tu historial visual",
   "short_name": "Seenly",
   "description": "Organiza tus películas, series y documentales vistos. Tu historial visual, siempre contigo.",
-  "id": "./",
-  "app_id": "com.seenly.app",
-  "start_url": "./?source=pwa",
-  "scope": "./",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "browser"],
   "orientation": "portrait-primary",
@@ -16,10 +15,30 @@
   "dir": "ltr",
   "categories": ["entertainment", "productivity", "movies"],
   "icons": [
-    { "src": "icons/icon-192-any.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon-512-any.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192-any.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512-any.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "screenshots": [
     {
@@ -40,26 +59,46 @@
       "name": "Añadir nuevo",
       "short_name": "Nuevo",
       "description": "Añadir nuevo contenido",
-      "url": "./?new=true",
-      "icons": [{ "src": "icons/icon-add.png", "sizes": "96x96", "type": "image/png" }]
+      "url": "/?new=true",
+      "icons": [
+        {
+          "src": "icons/icon-add.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Mis favoritos",
       "short_name": "Favoritos",
       "description": "Ver contenido favorito",
-      "url": "./?filter=favorites",
-      "icons": [{ "src": "icons/icon-fav.png", "sizes": "96x96", "type": "image/png" }]
+      "url": "/?filter=favorites",
+      "icons": [
+        {
+          "src": "icons/icon-fav.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "file_handlers": [
     {
-      "action": "./import",
-      "accept": { "application/json": [".json"] },
-      "icons": [{ "src": "icons/icon-import.png", "sizes": "96x96", "type": "image/png" }]
+      "action": "/import",
+      "accept": {
+        "application/json": [".json"]
+      },
+      "icons": [
+        {
+          "src": "icons/icon-import.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "share_target": {
-    "action": "./share",
+    "action": "/share",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
@@ -77,7 +116,7 @@
   "protocol_handlers": [
     {
       "protocol": "web+seenly",
-      "url": "./?url=%s"
+      "url": "/?url=%s"
     }
   ],
   "launch_handler": {
@@ -97,4 +136,5 @@
     }
   ]
 }
+
 

@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formulario = document.getElementById('formulario');
   const tipo = document.getElementById('tipo');
   const datosSerie = document.getElementById('datos-serie');
-  const lista = document.getElementById('lista-contenido');
+  const listaContenedor = document.getElementById('lista-contenido');
   const buscador = document.getElementById('buscador');
   const filtroTipo = document.getElementById('filtro-tipo');
   const filtroPlataforma = document.getElementById('filtro-plataforma');
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      botonInstalar.style.display = 'block';
+      botonInstalar.hidden = false;
     });
 
     botonInstalar.addEventListener('click', instalarPWA);
@@ -143,12 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarContenido(filtrados);
   }
 
-  function mostrarContenido(lista = contenido) {
-    lista.forEach(i => { if (i.favorito === undefined) i.favorito = false; });
+  function mostrarContenido(contenidoFiltrado = contenido) {
+    contenidoFiltrado.forEach(i => { if (i.favorito === undefined) i.favorito = false; });
 
-    lista.length === 0
-      ? lista.innerHTML = '<li class="no-resultados">No se encontraron resultados</li>'
-      : lista.innerHTML = lista.map(item => `
+    listaContenedor.innerHTML = contenidoFiltrado.length === 0
+      ? '<li class="no-resultados">No se encontraron resultados</li>'
+      : contenidoFiltrado.map(item => `
         <li data-id="${item.id}" class="${item.estado === 'Visto' ? 'visto' : ''}">
           <div class="contenido-header">
             <span class="tipo-badge ${item.tipo.toLowerCase()}">${item.tipo}</span>
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
       notificar('📱 App instalada');
-      botonInstalar.style.display = 'none';
+      botonInstalar.hidden = true;
     }
     deferredPrompt = null;
   }
@@ -298,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     n.textContent = mensaje;
     n.setAttribute('role', 'alert');
     n.setAttribute('aria-live', 'polite');
+    n.setAttribute('tabindex', '-1');
     document.body.appendChild(n);
     setTimeout(() => n.classList.add('mostrar'), 10);
     setTimeout(() => {
@@ -324,3 +325,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 800);
   }
 });
+

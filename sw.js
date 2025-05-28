@@ -1,4 +1,4 @@
-// sw.js – Service Worker Optimizado para Seenly
+// sw.js – Service Worker optimizado para Seenly
 
 const VERSION = 'v3';
 const CACHE_CORE = `seenly-core-${VERSION}`;
@@ -20,34 +20,35 @@ const CORE_ASSETS = [
   './icons/icon-512-any.png'
 ];
 
-// 🎯 Estrategia: Network First
+// 🎯 Estrategia: Network First (para HTML)
 async function networkFirst(request) {
   try {
-    const networkResponse = await fetch(request);
+    const response = await fetch(request);
     const cache = await caches.open(CACHE_DYNAMIC);
-    cache.put(request, networkResponse.clone());
-    return networkResponse;
-  } catch {
+    cache.put(request, response.clone());
+    return response;
+  } catch (error) {
     const cached = await caches.match(request);
-    return cached || (request.destination === 'document' ? caches.match(OFFLINE_PAGE) : undefined);
+    return cached || (request.destination === 'document' ? caches.match(OFFLINE_PAGE) : Response.error());
   }
 }
 
-// 🎯 Estrategia: Stale While Revalidate
+// 🎯 Estrategia: Stale While Revalidate (para estilos, scripts, imágenes)
 async function staleWhileRevalidate(request) {
   const cached = await caches.match(request);
-  const networkFetch = fetch(request)
+  const fetchPromise = fetch(request)
     .then(response => {
-      if (response.ok) {
+      if (response && response.ok) {
         caches.open(CACHE_DYNAMIC).then(cache => cache.put(request, response.clone()));
       }
       return response;
     })
     .catch(() => {});
-  return cached || networkFetch;
+
+  return cached || fetchPromise;
 }
 
-// ✅ Instalación
+// ✅ Evento: instalación
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_CORE)
@@ -56,7 +57,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// 🔁 Activación y limpieza de cachés antiguas
+// 🔁 Evento: activación y limpieza de cachés antiguas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -71,7 +72,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 🌍 Interceptar peticiones
+// 🌐 Evento: interceptar peticiones
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
@@ -90,12 +91,12 @@ self.addEventListener('fetch', event => {
           return caches.match(FALLBACK_IMAGE);
         }
         return fetch(request);
-      }).catch(() => undefined)
+      }).catch(() => Response.error())
     );
   }
 });
 
-// 🔄 Sync en segundo plano (ejemplo preparado)
+// 🔄 Evento: sincronización en segundo plano (preparado para el futuro)
 self.addEventListener('sync', event => {
   if (event.tag === 'sync-seenly') {
     event.waitUntil(procesarColaSync());
@@ -103,11 +104,11 @@ self.addEventListener('sync', event => {
 });
 
 async function procesarColaSync() {
-  // Implementar lógica si se usa cola offline
-  console.log('[SW] Sync en segundo plano activado');
+  console.log('[SW] Sincronización en segundo plano iniciada');
+  // Aquí podrías enviar datos guardados offline
 }
 
-// 🔔 Notificaciones Push
+// 🔔 Evento: notificaciones push
 self.addEventListener('push', event => {
   const data = event.data?.json() || {
     title: 'Seenly',
@@ -130,7 +131,7 @@ self.addEventListener('push', event => {
   );
 });
 
-// 📲 Acción al hacer clic en la notificación
+// 📲 Evento: clic en notificación
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const url = event.notification.data?.url || './';
@@ -142,5 +143,3 @@ self.addEventListener('notificationclick', event => {
     })
   );
 });
-
-
